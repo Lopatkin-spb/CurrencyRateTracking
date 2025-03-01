@@ -13,4 +13,9 @@ dependencyResolutionManagement {
     }
 }
 rootProject.name = "Currency Rate Tracking"
-include ':app'
+/**
+ * Modules
+ */
+include(":app")
+include(":shared:common-android")
+include(":shared:core")
