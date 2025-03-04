@@ -11,10 +11,8 @@ internal class CurrenciesViewModel(
     private val logger: BaseLogger,
 ) : AbstractViewModel() {
 
-    private val _text = MutableLiveData<String>().apply {
-        value = "This is Currencies Fragment"
-    }
-    val text: LiveData<String> = _text
+    private val _uiState = MutableLiveData(CurrenciesUiState())
+    val uiState: LiveData<CurrenciesUiState> = _uiState
 
     init {
         logger.d(TAG_LOG, "$NAME_CLASS init(): started")
@@ -24,12 +22,27 @@ internal class CurrenciesViewModel(
         when (new) {
             is CurrenciesUserEvent.OnScreenOpen -> {
                 logger.i(TAG_LOG, "$NAME_CLASS handle(): OnScreenOpen")
+                loadActualList()
             }
 
             is CurrenciesUserEvent.OnScreenClose -> {
                 logger.i(TAG_LOG, "$NAME_CLASS handle(): OnScreenClose")
             }
         }
+    }
+
+    private fun loadActualList() {
+        logger.i(TAG_LOG, "$NAME_CLASS loadActualList(): start")
+        val listStub = mutableListOf<ActualCurrencyPair>()
+        for (index in 1L..5) {
+            val item = ActualCurrencyPair(
+                id = index,
+                name = "SDDF",
+                quotation = 3.932455,
+            )
+            listStub.add(item)
+        }
+        _uiState.value = _uiState.value?.copy(listActual = listStub)
     }
 
     override fun onCleared() {

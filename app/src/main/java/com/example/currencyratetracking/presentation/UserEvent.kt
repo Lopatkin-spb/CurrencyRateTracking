@@ -1,0 +1,3 @@
+package com.example.currencyratetracking.presentation
+
+interface UserEvent

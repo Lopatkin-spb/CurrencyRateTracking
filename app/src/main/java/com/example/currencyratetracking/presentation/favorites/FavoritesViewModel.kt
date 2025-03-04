@@ -11,10 +11,8 @@ internal class FavoritesViewModel(
     private val logger: BaseLogger,
 ) : AbstractViewModel() {
 
-    private val _text = MutableLiveData<String>().apply {
-        value = "This is Favorites Fragment"
-    }
-    val text: LiveData<String> = _text
+    private val _uiState = MutableLiveData(FavoritesUiState())
+    val uiState: LiveData<FavoritesUiState> = _uiState
 
     init {
         logger.d(TAG_LOG, "$NAME_CLASS init(): started")
@@ -24,12 +22,27 @@ internal class FavoritesViewModel(
         when (new) {
             is FavoritesUserEvent.OnScreenOpen -> {
                 logger.i(TAG_LOG, "$NAME_CLASS handle(): OnScreenOpen")
+                loadFavoritesList()
             }
 
             is FavoritesUserEvent.OnScreenClose -> {
                 logger.i(TAG_LOG, "$NAME_CLASS handle(): OnScreenClose")
             }
         }
+    }
+
+    private fun loadFavoritesList() {
+        logger.i(TAG_LOG, "$NAME_CLASS loadFavoritesList(): start")
+        val listStub = mutableListOf<FavoriteCurrencyPair>()
+        for (index in 1L..3) {
+            val item = FavoriteCurrencyPair(
+                id = index,
+                name = "SDDF",
+                quotation = 3.932455,
+            )
+            listStub.add(item)
+        }
+        _uiState.value = _uiState.value?.copy(listFavorites = listStub)
     }
 
     override fun onCleared() {

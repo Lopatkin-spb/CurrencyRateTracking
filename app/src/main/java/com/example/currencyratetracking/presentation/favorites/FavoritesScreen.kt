@@ -1,28 +1,23 @@
 package com.example.currencyratetracking.presentation.favorites
 
 import android.content.Context
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.currencyratetracking.presentation.MainActivity
-import com.example.currencyratetracking.presentation.OnLifecycleScreen
-import com.example.currencyratetracking.presentation.ViewModelFactory
+import com.example.currencyratetracking.R
+import com.example.currencyratetracking.presentation.*
 import com.example.currencyratetracking.presentation.theme.CurrencyRateTrackingTheme
 import javax.inject.Inject
 
@@ -43,40 +38,82 @@ internal fun FavoritesScreen(
     },
     viewModel: FavoritesViewModel = viewModel(factory = container.viewModelFactory),
 ) {
-    val text by viewModel.text.observeAsState()
+    val uiState by viewModel.uiState.observeAsState()
 
     OnLifecycleScreen(
         onStart = { viewModel.handle(FavoritesUserEvent.OnScreenOpen) },
         onStop = { viewModel.handle(FavoritesUserEvent.OnScreenClose) },
     )
 
-    Screen(text)
+    uiState?.let { state ->
+        Content(
+            uiState = state,
+            onEvent = { event -> viewModel.handle(event) },
+        )
+    }
 }
 
 @Composable
-private fun Screen(
-    text: String?,
-    modifier: Modifier = Modifier
+private fun Content(
+    modifier: Modifier = Modifier,
+    uiState: FavoritesUiState,
+    onEvent: (FavoritesUserEvent) -> Unit,
 ) {
-    text?.let { text ->
-        Box(modifier.fillMaxSize()) {
-            Text(
-                text = text,
-                modifier = modifier.fillMaxWidth().wrapContentHeight().align(Alignment.Center),
-                textAlign = TextAlign.Center,
-                fontSize = 20.sp,
-            )
+
+    ScreenComponent {
+
+        ToolbarComponent(title = R.string.title_favorites)
+
+        CurrenciesListSection(
+            modifier = Modifier.padding(start = 16.dp, top = 65.dp, end = 16.dp),
+            uiState = uiState,
+            onEvent = onEvent,
+        )
+    }
+}
+
+
+@Composable
+private fun CurrenciesListSection(
+    modifier: Modifier = Modifier,
+    uiState: FavoritesUiState,
+    onEvent: (screen: FavoritesUserEvent) -> Unit,
+) {
+
+    LazyColumn(
+        modifier = modifier.wrapContentSize(),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        items(
+            items = uiState.listFavorites,
+            key = { ticket -> ticket.id },
+        ) { favoritePair ->
+            CurrencyItem(data = favoritePair)
         }
     }
 }
+
 
 @Preview(showSystemUi = true)
 @Composable
 private fun ScreenPreview() {
     CurrencyRateTrackingTheme {
-        // A surface container using the 'background' color from the theme
-        Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background) {
-            Screen(text = "FavoritesFragment")
+//         A surface container using the 'background' color from the theme
+//        Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background) {
+
+        val listStub = mutableListOf<FavoriteCurrencyPair>()
+        for (index in 1L..5) {
+            val item = FavoriteCurrencyPair(
+                id = index,
+                name = "SDDF/JHY",
+                quotation = 3.932455,
+            )
+            listStub.add(item)
         }
+
+        Content(
+            onEvent = {},
+            uiState = FavoritesUiState(listFavorites = listStub),
+        )
     }
 }

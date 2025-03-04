@@ -41,7 +41,7 @@ class MainActivity : AbstractActivity() {
                 // A surface container using the 'background' color from the theme
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background) {
 //                    Greeting("Android")
-                    Screen()
+                    Content()
                 }
             }
         }
@@ -96,7 +96,7 @@ class MainActivity : AbstractActivity() {
 
 
 @Composable
-private fun Screen(
+private fun Content(
     modifier: Modifier = Modifier,
 ) {
     val navController = rememberNavController()
@@ -154,7 +154,7 @@ private fun ScreenPreview() {
     CurrencyRateTrackingTheme {
         // A surface container using the 'background' color from the theme
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background) {
-            Screen()
+            Content()
         }
     }
 }
