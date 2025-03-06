@@ -1,19 +1,20 @@
 package com.example.currencyratetracking.presentation.favorites
 
-import com.example.currencyratetracking.presentation.Currency
+import com.example.currencyratetracking.presentation.CurrencyUi
 import com.example.currencyratetracking.presentation.UserEvent
 
 
 //TODO: correct names all
-internal data class FavoriteCurrencyPair(
+internal data class FavoriteCurrencyRate(
     override val id: Long,
     override val name: String,
-    override val quotation: Double,
-) : Currency(id, name, quotation)
+    override val charCode: String,
+    override val quotation: String,
+) : CurrencyUi(id = id, name = name, quotation = quotation, charCode = charCode)
 
 
 internal data class FavoritesUiState(
-    val listFavorites: List<FavoriteCurrencyPair> = emptyList(),
+    val listFavorites: List<FavoriteCurrencyRate> = emptyList(),
 )
 
 

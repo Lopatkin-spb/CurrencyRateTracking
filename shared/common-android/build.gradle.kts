@@ -21,6 +21,8 @@ android {
 }
 
 dependencies {
+    /** Modules */
+    implementation(project(":shared:common"))
 
     /**
      * DI: Dagger 2

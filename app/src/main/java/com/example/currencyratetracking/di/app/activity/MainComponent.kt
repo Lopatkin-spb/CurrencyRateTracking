@@ -1,12 +1,14 @@
 package com.example.currencyratetracking.di.app.activity
 
+import com.example.currencyratetracking.common.ActivityScope
 import com.example.currencyratetracking.presentation.MainActivity
 import com.example.currencyratetracking.presentation.currencies.CurrenciesDaggerContainer
 import com.example.currencyratetracking.presentation.favorites.FavoritesDaggerContainer
 import dagger.Subcomponent
 
 
-@Subcomponent
+@ActivityScope
+@Subcomponent(modules = [MainModule::class])
 interface MainComponent {
 
     @Subcomponent.Factory

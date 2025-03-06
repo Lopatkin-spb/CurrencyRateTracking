@@ -14,6 +14,7 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
+        buildConfigField("String", "API_URL", "\"https://api.vatcomply.com/\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -55,11 +56,12 @@ android {
 }
 
 dependencies {
-    /**
-     * Modules
-     */
+    /** Modules */
     implementation(project(":shared:common-android"))
     implementation(project(":shared:core"))
+    implementation(project(":shared:api-remote"))
+    implementation(project(":shared:model"))
+    implementation(project(":shared:common"))
 
     /**
      * Kotlin
@@ -92,6 +94,12 @@ dependencies {
      */
     implementation(libs.dagger)
     kapt(libs.dagger.compiler)
+
+    /**
+     * Multithreading: Coroutines
+     */
+    implementation(libs.kotlinx.coroutines.android)
+    testImplementation(libs.kotlinx.coroutines.test)
 
     /**
      * Tests

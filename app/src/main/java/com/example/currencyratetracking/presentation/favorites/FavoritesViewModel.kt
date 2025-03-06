@@ -31,14 +31,16 @@ internal class FavoritesViewModel(
         }
     }
 
+    //TODO: renames
     private fun loadFavoritesList() {
         logger.i(TAG_LOG, "$NAME_CLASS loadFavoritesList(): start")
-        val listStub = mutableListOf<FavoriteCurrencyPair>()
+        val listStub = mutableListOf<FavoriteCurrencyRate>()
         for (index in 1L..3) {
-            val item = FavoriteCurrencyPair(
+            val item = FavoriteCurrencyRate(
                 id = index,
-                name = "SDDF",
-                quotation = 3.932455,
+                name = "dfgfd gdfgfdgdf",
+                charCode = "SDDF",
+                quotation = "3.932455",
             )
             listStub.add(item)
         }

@@ -1,17 +1,20 @@
 package com.example.currencyratetracking.common_android.di
 
+import com.example.currencyratetracking.common.ApplicationScope
 import com.example.currencyratetracking.common_android.BaseLogger
 import com.example.currencyratetracking.common_android.LogcatBaseLogger
 import dagger.Binds
 import dagger.Module
 
 
-@Module(includes = [LoggerModule::class])
+@Module(includes = [InternalCommonAndroidModule::class])
 interface CommonAndroidModule
 
 
 @Module
-internal interface LoggerModule {
+internal interface InternalCommonAndroidModule {
+
+    @ApplicationScope
     @Binds
     fun bindBaseLogger(logger: LogcatBaseLogger): BaseLogger
 }

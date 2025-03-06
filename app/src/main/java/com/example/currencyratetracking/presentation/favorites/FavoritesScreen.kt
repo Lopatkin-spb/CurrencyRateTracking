@@ -101,12 +101,13 @@ private fun ScreenPreview() {
 //         A surface container using the 'background' color from the theme
 //        Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background) {
 
-        val listStub = mutableListOf<FavoriteCurrencyPair>()
+        val listStub = mutableListOf<FavoriteCurrencyRate>()
         for (index in 1L..5) {
-            val item = FavoriteCurrencyPair(
+            val item = FavoriteCurrencyRate(
                 id = index,
-                name = "SDDF/JHY",
-                quotation = 3.932455,
+                name = "dfgf d dfgdfg sdfgsdf s",
+                charCode = "SDDF/JHY",
+                quotation = "3.932455",
             )
             listStub.add(item)
         }

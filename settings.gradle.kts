@@ -19,3 +19,6 @@ rootProject.name = "Currency Rate Tracking"
 include(":app")
 include(":shared:common-android")
 include(":shared:core")
+include(":shared:api-remote")
+include(":shared:model")
+include(":shared:common")
