@@ -21,7 +21,7 @@ internal class FavoritesViewModel(
     val uiState: LiveData<FavoritesUiState> = _uiState
 
     init {
-        logger.d(TAG_LOG, "$NAME_CLASS init(): started")
+        logger.d(TAG_LOG, "$NAME_FULL started")
 
         loadFavoritesList()
     }
@@ -29,15 +29,15 @@ internal class FavoritesViewModel(
     fun handle(new: FavoritesUserEvent) {
         when (new) {
             is FavoritesUserEvent.OnScreenOpen -> {
-                logger.i(TAG_LOG, "$NAME_CLASS handle(): OnScreenOpen")
+                logger.i(TAG_LOG, "$NAME_FULL OnScreenOpen")
             }
 
             is FavoritesUserEvent.OnScreenClose -> {
-                logger.i(TAG_LOG, "$NAME_CLASS handle(): OnScreenClose")
+                logger.i(TAG_LOG, "$NAME_FULL OnScreenClose")
             }
 
             is FavoritesUserEvent.OnChangeFavoriteState -> {
-                logger.i(TAG_LOG, "$NAME_CLASS handle(): OnChangeFavoriteState")
+                logger.i(TAG_LOG, "$NAME_FULL OnChangeFavoriteState")
                 updateFavoritePairState(new.currency)
             }
         }
@@ -45,13 +45,13 @@ internal class FavoritesViewModel(
 
     //TODO: renames
     private fun loadFavoritesList() {
-        logger.d(TAG_LOG, "$NAME_CLASS loadFavoritesList(): start")
+        logger.d(TAG_LOG, "$NAME_FULL started")
 
         runBlocking {
 
             try {
                 launch {
-                    logger.v(TAG_LOG, "$NAME_CLASS loadFavoritesList(): coroutine started")
+                    logger.v(TAG_LOG, "$NAME_FULL started")
 
                     val list = favoriteCurrencyPairApi.getAllPairs().asSequence()
                         .map { dbo -> dbo.toCurrencyPair() }
@@ -61,16 +61,16 @@ internal class FavoritesViewModel(
 
                     _uiState.value = _uiState.value?.copy(listFavorites = list)
 
-                    logger.v(TAG_LOG, "$NAME_CLASS loadFavoritesList(): coroutine ended $list")
+                    logger.v(TAG_LOG, "$NAME_FULL ended")
                 }
             } catch (t: Throwable) {
-                logger.w(TAG_LOG, "$NAME_CLASS loadFavoritesList(): coroutine error $t", t)
+                logger.w(TAG_LOG, "$NAME_FULL error $t", t)
             }
         }
     }
 
     private fun updateFavoritePairState(new: CurrencyUi) {
-        logger.d(TAG_LOG, "$NAME_CLASS updateFavoritePairState(): started")
+        logger.d(TAG_LOG, "$NAME_FULL started")
 
         val newList = arrayListOf<FavoriteCurrencyRate>()
         _uiState.value?.listFavorites?.let { list ->
@@ -102,25 +102,25 @@ internal class FavoritesViewModel(
 
 
     private fun deletePairFromFavorite(currency: CurrencyUi) {
-        logger.d(TAG_LOG, "$NAME_CLASS deletePairFromFavorite(): started")
+        logger.d(TAG_LOG, "$NAME_FULL started")
 
         runBlocking {
             try {
                 launch {
-                    logger.v(TAG_LOG, "$NAME_CLASS deletePairFromFavorite(): coroutine started")
+                    logger.v(TAG_LOG, "$NAME_FULL started")
 
                     if (!currency.isFavorite) favoriteCurrencyPairApi.deletePairBy(currency.id)
-                    logger.v(TAG_LOG, "$NAME_CLASS deletePairFromFavorite(): coroutine ended")
+                    logger.v(TAG_LOG, "$NAME_FULL ended")
                     loadFavoritesList()
                 }
             } catch (t: Throwable) {
-                logger.w(TAG_LOG, "$NAME_CLASS deletePairFromFavorite(): coroutine error $t", t)
+                logger.w(TAG_LOG, "$NAME_FULL error $t", t)
             }
         }
     }
 
     override fun onCleared() {
-        logger.v(TAG_LOG, "$NAME_CLASS onCleared(): started")
+        logger.v(TAG_LOG, "$NAME_FULL started")
         updateFavoritePairsToDb()
         super.onCleared()
     }

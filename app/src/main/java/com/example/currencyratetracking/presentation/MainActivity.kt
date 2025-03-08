@@ -35,7 +35,7 @@ class MainActivity : AbstractActivity() {
         mainComponent = (applicationContext as CrtApp).getAppComponent().getMainComponent().create()
         mainComponent.inject(this)
         super.onCreate(savedInstanceState)
-        logger.d(TAG_LOG, "$NAME_CLASS onCreate(): started")
+        logger.d(TAG_LOG, "$NAME_FULL started")
         setContent {
             CurrencyRateTrackingTheme {
                 // A surface container using the 'background' color from the theme
@@ -48,32 +48,32 @@ class MainActivity : AbstractActivity() {
     }
 
     override fun onStart() {
-        logger.v(TAG_LOG, "$NAME_CLASS onStart(): started")
+        logger.v(TAG_LOG, "$NAME_FULL started")
         super.onStart()
     }
 
     override fun onRestart() {
-        logger.v(TAG_LOG, "$NAME_CLASS onRestart(): started")
+        logger.v(TAG_LOG, "$NAME_FULL started")
         super.onRestart()
     }
 
     override fun onResume() {
-        logger.i(TAG_LOG, "$NAME_CLASS onResume(): started")
+        logger.i(TAG_LOG, "$NAME_FULL started")
         super.onResume()
     }
 
     override fun onPause() {
-        logger.i(TAG_LOG, "$NAME_CLASS onPause(): started")
+        logger.i(TAG_LOG, "$NAME_FULL started")
         super.onPause()
     }
 
     override fun onStop() {
-        logger.v(TAG_LOG, "$NAME_CLASS onStop(): started")
+        logger.v(TAG_LOG, "$NAME_FULL started")
         super.onStop()
     }
 
     override fun onDestroy() {
-        logger.d(TAG_LOG, "$NAME_CLASS onDestroy(): started")
+        logger.d(TAG_LOG, "$NAME_FULL started")
         super.onDestroy()
     }
 

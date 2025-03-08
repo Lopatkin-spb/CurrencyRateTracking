@@ -26,7 +26,7 @@ internal class CurrenciesViewModel(
     val uiState: LiveData<CurrenciesUiState> = _uiState
 
     init {
-        logger.d(TAG_LOG, "$NAME_CLASS init(): started")
+        logger.d(TAG_LOG, "$NAME_FULL started")
 
         loadListBaseCurrencies()
         _uiState.value?.showedBaseCurrency?.let { loadListActualCurrencyRates(it) }
@@ -35,21 +35,21 @@ internal class CurrenciesViewModel(
     fun handle(new: CurrenciesUserEvent) {
         when (new) {
             is CurrenciesUserEvent.OnScreenOpen -> {
-                logger.i(TAG_LOG, "$NAME_CLASS handle(): OnScreenOpen")
+                logger.i(TAG_LOG, "$NAME_FULL OnScreenOpen")
             }
 
             is CurrenciesUserEvent.OnScreenClose -> {
-                logger.i(TAG_LOG, "$NAME_CLASS handle(): OnScreenClose")
+                logger.i(TAG_LOG, "$NAME_FULL OnScreenClose")
             }
 
             is CurrenciesUserEvent.OnChangeBaseCurrency -> {
-                logger.i(TAG_LOG, "$NAME_CLASS handle(): OnChangeBaseCurrency")
+                logger.i(TAG_LOG, "$NAME_FULL OnChangeBaseCurrency")
                 setShowedBaseCurrency(new.name)
                 loadListActualCurrencyRates(new.name)
             }
 
             is CurrenciesUserEvent.OnChangeFavoriteState -> {
-                logger.i(TAG_LOG, "$NAME_CLASS handle(): OnChangeFavoriteState")
+                logger.i(TAG_LOG, "$NAME_FULL OnChangeFavoriteState")
                 updateListActualCurrencyRates(new.currency)
                 if (new.currency.isFavorite) savePairToFavorite(new.currency)
                 else deletePairFromFavorite(new.currency)
@@ -59,7 +59,7 @@ internal class CurrenciesViewModel(
 
     //TODO: bug if list > screen then dropdownmenu unsize
     private fun loadListBaseCurrencies() {
-        logger.d(TAG_LOG, "$NAME_CLASS loadListBaseCurrencies(): start")
+        logger.d(TAG_LOG, "$NAME_FULL started")
         val listStub = mutableListOf<String>()
         val enumEntries = CurrencyInfo.entries
         for (index in 0 until enumEntries.size - 7) {
@@ -76,15 +76,15 @@ internal class CurrenciesViewModel(
     }
 
     private fun loadListActualCurrencyRates(name: String) {
-        logger.d(TAG_LOG, "$NAME_CLASS loadListActualCurrencyRates(): start")
+        logger.d(TAG_LOG, "$NAME_FULL started")
         runBlocking {
 
             try {
                 launch {
-                    logger.v(TAG_LOG, "$NAME_CLASS loadListActualCurrencyRates(): coroutine started")
+                    logger.v(TAG_LOG, "$NAME_FULL launch")
 
                     val result = api.getRates(name)
-                    logger.v(TAG_LOG, "$NAME_CLASS loadListActualCurrencyRates(): coroutine ended result = $result")
+                    logger.v(TAG_LOG, "$NAME_FULL ended result = $result")
 
                     val list = result.rates?.getListRatesDto()?.asSequence()
                         ?.map { dto -> dto.toCurrency() }
@@ -97,19 +97,19 @@ internal class CurrenciesViewModel(
 
                 }
             } catch (t: Throwable) {
-                logger.w(TAG_LOG, "$NAME_CLASS loadListActualCurrencyRates(): coroutine error $t", t)
+                logger.w(TAG_LOG, "$NAME_FULL error $t", t)
             }
         }
     }
 
 
     private fun savePairToFavorite(currency: CurrencyUi) {
-        logger.d(TAG_LOG, "$NAME_CLASS savePairToFavorite(): started")
+        logger.d(TAG_LOG, "$NAME_FULL started")
         runBlocking {
 
             try {
                 launch {
-                    logger.v(TAG_LOG, "$NAME_CLASS savePairToFavorite(): coroutine started")
+                    logger.v(TAG_LOG, "$NAME_FULL launch")
                     _uiState.value?.let { state ->
 
                         val model = currency.toCurrencyPair(state.showedBaseCurrency)
@@ -117,16 +117,16 @@ internal class CurrenciesViewModel(
                         favoriteCurrencyPairApi.checkAndInsertUniquePair(dbo)
                     }
 
-                    logger.v(TAG_LOG, "$NAME_CLASS savePairToFavorite(): coroutine ended")
+                    logger.v(TAG_LOG, "$NAME_FULL ended")
                 }
             } catch (t: Throwable) {
-                logger.w(TAG_LOG, "$NAME_CLASS saveFavoritePair(): coroutine error $t", t)
+                logger.w(TAG_LOG, "$NAME_FULL error $t", t)
             }
         }
     }
 
     private fun updateListActualCurrencyRates(new: CurrencyUi) {
-        logger.d(TAG_LOG, "$NAME_CLASS updateListActualCurrencyRates(): started")
+        logger.d(TAG_LOG, "$NAME_FULL started")
 
         val newList = arrayListOf<ActualCurrencyRateUi>()
         _uiState.value?.listActualCurrencyRates?.let {
@@ -150,30 +150,30 @@ internal class CurrenciesViewModel(
 
 
     private fun deletePairFromFavorite(currency: CurrencyUi) {
-        logger.d(TAG_LOG, "$NAME_CLASS deletePairFromFavorite(): started $currency")
+        logger.d(TAG_LOG, "$NAME_FULL started $currency")
 
         runBlocking {
 
             try {
                 launch {
-                    logger.v(TAG_LOG, "$NAME_CLASS deletePairFromFavorite(): coroutine started")
+                    logger.v(TAG_LOG, "$NAME_FULL launch")
                     _uiState.value?.let { state ->
 
                         val model = currency.toCurrencyPair(state.showedBaseCurrency)
                         val dbo = model.toFavoriteCurrencyPairDbo()
                         favoriteCurrencyPairApi.deleteAll(dbo)
                     }
-                    logger.v(TAG_LOG, "$NAME_CLASS deletePairFromFavorite(): coroutine ended")
+                    logger.v(TAG_LOG, "$NAME_FULL ended")
                 }
             } catch (t: Throwable) {
-                logger.w(TAG_LOG, "$NAME_CLASS deletePairFromFavorite(): coroutine error $t", t)
+                logger.w(TAG_LOG, "$NAME_FULL error $t", t)
             }
         }
     }
 
 
     override fun onCleared() {
-        logger.v(TAG_LOG, "$NAME_CLASS onCleared(): started")
+        logger.v(TAG_LOG, "$NAME_FULL started")
         super.onCleared()
     }
 }
