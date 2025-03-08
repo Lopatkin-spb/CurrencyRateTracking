@@ -8,6 +8,14 @@ public open class Currency(
 )
 
 
+public open class CurrencyPair(
+    public open val id: Long,
+    public open val charCodeBase: CurrencyInfo,
+    public open val charCodeSecond: CurrencyInfo,
+    public open val quotation: Double,
+)
+
+
 public enum class CurrencyInfo(
     public val id: Int,
 ) {

@@ -3,8 +3,16 @@ package com.example.currencyratetracking.presentation
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.Icon
+import androidx.compose.material.IconToggleButton
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -15,7 +23,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import com.example.currencyratetracking.R
-import com.example.currencyratetracking.presentation.currencies.CurrenciesUserEvent
 import com.example.currencyratetracking.presentation.theme.*
 
 
@@ -110,12 +117,36 @@ fun ToolbarComponent(
     }
 }
 
+//TODO: bug correct list must moved to under toolbar
+@Composable
+fun CurrenciesListSection(
+    modifier: Modifier = Modifier,
+    list: List<CurrencyUi>,
+    onFavoriteEvent: (CurrencyUi) -> Unit,
+) {
+
+    LazyColumn(
+        modifier = modifier.wrapContentSize(),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        items(
+            items = list,
+            key = { item -> item.id },
+        ) { item ->
+            CurrencyItem(
+                data = item,
+                onFavoriteEvent = onFavoriteEvent,
+            )
+        }
+    }
+}
+
 
 @Composable
 fun CurrencyItem(
     modifier: Modifier = Modifier,
     data: CurrencyUi,
-    onEvent: (CurrenciesUserEvent) -> Unit = {},
+    onFavoriteEvent: (CurrencyUi) -> Unit = {},
 ) {
     Row(
         modifier = modifier
@@ -129,7 +160,7 @@ fun CurrencyItem(
                 .wrapContentHeight()
                 .weight(weight = 1f, fill = true)
                 .align(Alignment.CenterVertically),
-            text = data.charCode,
+            text = data.text,
             maxLines = 1,
             style = MaterialTheme.typography.subtitle2,
         )
@@ -144,19 +175,23 @@ fun CurrencyItem(
                     .wrapContentHeight()
                     .weight(weight = 1f, fill = true)
                     .align(Alignment.CenterVertically),
-                text = "${data.quotation}",
+                text = data.quotation,
                 style = MaterialTheme.typography.subtitle1,
             )
-            val checked = remember { mutableStateOf(false) }
             IconToggleButton(
                 modifier = Modifier.size(24.dp).align(Alignment.CenterVertically),
-                checked = checked.value,
+                checked = data.isFavorite,
                 onCheckedChange = {
-                    checked.value = it
-                    onEvent(CurrenciesUserEvent.OnSaveToFavorite(saveState = it, currency = data))
+                    val dataNew = CurrencyUi(
+                        id = data.id,
+                        text = data.text,
+                        quotation = data.quotation,
+                        isFavorite = it,
+                    )
+                    onFavoriteEvent(dataNew)
                 },
             ) {
-                if (checked.value) {
+                if (data.isFavorite) {
                     Icon(
                         painter = painterResource(R.drawable.ic_favorites_on_24),
                         contentDescription = null,

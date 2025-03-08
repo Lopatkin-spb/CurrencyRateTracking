@@ -5,8 +5,6 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -75,8 +73,8 @@ private fun Content(
 
         CurrenciesListSection(
             modifier = Modifier.padding(start = 16.dp, top = 133.dp, end = 16.dp),
-            uiState = uiState,
-            onEvent = onEvent,
+            list = uiState.listActualCurrencyRates,
+            onFavoriteEvent = { data -> onEvent(CurrenciesUserEvent.OnChangeFavoriteState(data)) },
         )
     }
 }
@@ -228,28 +226,6 @@ private fun CurrencyDropdownComponent(
 }
 
 
-//TODO: bug correct list must moved to under toolbar
-@Composable
-private fun CurrenciesListSection(
-    modifier: Modifier = Modifier,
-    uiState: CurrenciesUiState,
-    onEvent: (CurrenciesUserEvent) -> Unit,
-) {
-
-    LazyColumn(
-        modifier = modifier.wrapContentSize(),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        items(
-            items = uiState.listActualCurrencyRates,
-            key = { currency -> currency.id },
-        ) { favoritePair ->
-            CurrencyItem(data = favoritePair, onEvent = onEvent)
-        }
-    }
-}
-
-
 @Preview(showSystemUi = true)
 @Composable
 private fun ScreenPreview() {
@@ -261,9 +237,9 @@ private fun ScreenPreview() {
         for (index in 1L..5) {
             val item = ActualCurrencyRateUi(
                 id = index,
-                name = "dfgdfg jfhgfhgf",
-                charCode = "TGR",
+                text = "TGR",
                 quotation = "3.932455",
+                isFavorite = false,
             )
             listStub.add(item)
         }

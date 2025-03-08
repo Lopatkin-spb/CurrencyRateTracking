@@ -1,6 +1,7 @@
 package com.example.currencyratetracking.presentation.currencies
 
 import com.example.currencyratetracking.presentation.CurrencyUi
+import com.example.currencyratetracking.presentation.UserEvent
 
 
 internal data class CurrenciesUiState(
@@ -12,15 +13,15 @@ internal data class CurrenciesUiState(
 
 internal data class ActualCurrencyRateUi(
     override val id: Long,
-    override val name: String,
-    override val charCode: String,
+    override val text: String,
     override val quotation: String,
-) : CurrencyUi(id = id, name = name, quotation = quotation, charCode = charCode)
+    override val isFavorite: Boolean,
+) : CurrencyUi(id = id, text = text, quotation = quotation, isFavorite = isFavorite)
 
 
-sealed interface CurrenciesUserEvent {
+sealed interface CurrenciesUserEvent : UserEvent {
     data object OnScreenOpen : CurrenciesUserEvent
     data object OnScreenClose : CurrenciesUserEvent
     data class OnChangeBaseCurrency(val name: String) : CurrenciesUserEvent
-    data class OnSaveToFavorite(val saveState: Boolean, val currency: CurrencyUi) : CurrenciesUserEvent
+    data class OnChangeFavoriteState(val currency: CurrencyUi) : CurrenciesUserEvent
 }

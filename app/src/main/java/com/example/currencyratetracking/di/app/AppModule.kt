@@ -1,7 +1,7 @@
 package com.example.currencyratetracking.di.app
 
-
 import com.example.currencyratetracking.BuildConfig
+import com.example.currencyratetracking.api_locale.di.ApiLocaleModule
 import com.example.currencyratetracking.api_remote.di.ApiRemoteModule
 import com.example.currencyratetracking.api_remote.di.ApiUrl
 import com.example.currencyratetracking.api_remote.di.BuildType
@@ -19,6 +19,7 @@ import dagger.Provides
         CommonAndroidModule::class,
         ApiRemoteModule::class,
         CommonModule::class,
+        ApiLocaleModule::class,
     ]
 )
 interface AppModule {

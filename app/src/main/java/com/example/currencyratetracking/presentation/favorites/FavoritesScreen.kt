@@ -1,11 +1,7 @@
 package com.example.currencyratetracking.presentation.favorites
 
 import android.content.Context
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
@@ -66,30 +62,9 @@ private fun Content(
 
         CurrenciesListSection(
             modifier = Modifier.padding(start = 16.dp, top = 65.dp, end = 16.dp),
-            uiState = uiState,
-            onEvent = onEvent,
+            list = uiState.listFavorites,
+            onFavoriteEvent = { data -> onEvent(FavoritesUserEvent.OnChangeFavoriteState(data)) },
         )
-    }
-}
-
-
-@Composable
-private fun CurrenciesListSection(
-    modifier: Modifier = Modifier,
-    uiState: FavoritesUiState,
-    onEvent: (screen: FavoritesUserEvent) -> Unit,
-) {
-
-    LazyColumn(
-        modifier = modifier.wrapContentSize(),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        items(
-            items = uiState.listFavorites,
-            key = { ticket -> ticket.id },
-        ) { favoritePair ->
-            CurrencyItem(data = favoritePair)
-        }
     }
 }
 
@@ -105,9 +80,9 @@ private fun ScreenPreview() {
         for (index in 1L..5) {
             val item = FavoriteCurrencyRate(
                 id = index,
-                name = "dfgf d dfgdfg sdfgsdf s",
-                charCode = "SDDF/JHY",
+                text = "SDDF/JHY",
                 quotation = "3.932455",
+                isFavorite = true,
             )
             listStub.add(item)
         }

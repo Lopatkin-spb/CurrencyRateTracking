@@ -62,6 +62,7 @@ dependencies {
     implementation(project(":shared:api-remote"))
     implementation(project(":shared:model"))
     implementation(project(":shared:common"))
+    implementation(project(":shared:api-locale"))
 
     /**
      * Kotlin

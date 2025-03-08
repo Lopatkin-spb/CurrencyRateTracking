@@ -9,8 +9,8 @@ internal fun Currency.toActualCurrencyRateUi(): ActualCurrencyRateUi {
 
     return ActualCurrencyRateUi(
         id = this.id,
-        name = "",
-        charCode = this.charCode.name,
+        text = this.charCode.name,
         quotation = quotation,
+        isFavorite = false,
     )
 }
