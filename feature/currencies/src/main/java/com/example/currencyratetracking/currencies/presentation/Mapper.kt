@@ -1,4 +1,4 @@
-package com.example.currencyratetracking.presentation.currencies
+package com.example.currencyratetracking.currencies.presentation
 
 import com.example.currencyratetracking.model.Currency
 

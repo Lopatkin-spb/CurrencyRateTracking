@@ -1,4 +1,4 @@
-package com.example.currencyratetracking.presentation.theme
+package com.example.currencyratetracking.ui_theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.MaterialTheme

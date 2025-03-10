@@ -63,6 +63,8 @@ dependencies {
     implementation(project(":shared:model"))
     implementation(project(":shared:common"))
     implementation(project(":shared:api-locale"))
+    implementation(project(":feature:currencies"))
+    implementation(project(":shared:ui-theme"))
 
     /**
      * Kotlin

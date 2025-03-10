@@ -1,4 +1,4 @@
-package com.example.currencyratetracking.presentation
+package com.example.currencyratetracking.currencies
 
 import com.example.currencyratetracking.api_locale.api.FavoriteCurrencyPairDbo
 import com.example.currencyratetracking.api_remote.api.RateDto

@@ -1,4 +1,4 @@
-package com.example.currencyratetracking.presentation
+package com.example.currencyratetracking.core
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
@@ -22,8 +22,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
-import com.example.currencyratetracking.R
-import com.example.currencyratetracking.presentation.theme.*
+import com.example.currencyratetracking.model.CurrencyUi
+import com.example.currencyratetracking.ui_theme.*
+import com.example.currencyratetracking.ui_theme.R
 
 
 /**
@@ -31,7 +32,7 @@ import com.example.currencyratetracking.presentation.theme.*
  * For analytics, logs, and other events.
  */
 @Composable
-internal fun OnLifecycleScreen(
+ fun OnLifecycleScreen(
     onStart: () -> Unit = {},
     onStop: () -> Unit = {},
 ) {
@@ -194,12 +195,16 @@ fun CurrencyItem(
                 if (data.isFavorite) {
                     Icon(
                         painter = painterResource(R.drawable.ic_favorites_on_24),
+//                        painter = rememberVectorPainter(Icons.Filled.Place),
+
                         contentDescription = null,
                         tint = Yellow,
                     )
                 } else {
                     Icon(
                         painter = painterResource(R.drawable.ic_favorites_off_24),
+//                        painter = rememberVectorPainter(Icons.Filled.Place),
+
                         contentDescription = null,
                         tint = Secondary,
                     )

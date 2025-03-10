@@ -1,17 +1,16 @@
-package com.example.currencyratetracking.presentation.currencies
+package com.example.currencyratetracking.currencies.presentation
 
-import com.example.currencyratetracking.presentation.CurrencyUi
-import com.example.currencyratetracking.presentation.UserEvent
+import com.example.currencyratetracking.model.CurrencyUi
 
 
-internal data class CurrenciesUiState(
+data class CurrenciesUiState(
     val showedBaseCurrency: String = "",
     val listBaseCurrencies: List<String> = emptyList(),
     val listActualCurrencyRates: List<ActualCurrencyRateUi> = emptyList(),
 )
 
 
-internal data class ActualCurrencyRateUi(
+data class ActualCurrencyRateUi(
     override val id: Long,
     override val text: String,
     override val quotation: String,
@@ -19,7 +18,7 @@ internal data class ActualCurrencyRateUi(
 ) : CurrencyUi(id = id, text = text, quotation = quotation, isFavorite = isFavorite)
 
 
-sealed interface CurrenciesUserEvent : UserEvent {
+sealed interface CurrenciesUserEvent {
     data object OnScreenOpen : CurrenciesUserEvent
     data object OnScreenClose : CurrenciesUserEvent
     data class OnChangeBaseCurrency(val name: String) : CurrenciesUserEvent

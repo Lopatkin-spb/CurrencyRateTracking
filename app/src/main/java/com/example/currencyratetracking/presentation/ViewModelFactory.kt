@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.currencyratetracking.api_locale.api.FavoriteCurrencyPairApi
 import com.example.currencyratetracking.api_remote.api.RatesApi
 import com.example.currencyratetracking.common_android.BaseLogger
-import com.example.currencyratetracking.presentation.currencies.CurrenciesViewModel
+import com.example.currencyratetracking.currencies.presentation.CurrenciesViewModel
 import com.example.currencyratetracking.presentation.favorites.FavoritesViewModel
 
 

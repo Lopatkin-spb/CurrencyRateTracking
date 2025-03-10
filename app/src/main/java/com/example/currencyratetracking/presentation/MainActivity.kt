@@ -18,13 +18,15 @@ import androidx.navigation.compose.rememberNavController
 import com.example.currencyratetracking.app.CrtApp
 import com.example.currencyratetracking.common_android.BaseLogger
 import com.example.currencyratetracking.core.AbstractActivity
+import com.example.currencyratetracking.currencies.di.CurrenciesComponent
+import com.example.currencyratetracking.currencies.di.CurrenciesComponentProvider
 import com.example.currencyratetracking.di.app.activity.MainComponent
 import com.example.currencyratetracking.presentation.ModuleTag.TAG_LOG
-import com.example.currencyratetracking.presentation.theme.CurrencyRateTrackingTheme
+import com.example.currencyratetracking.ui_theme.CurrencyRateTrackingTheme
 import javax.inject.Inject
 
 
-class MainActivity : AbstractActivity() {
+class MainActivity : AbstractActivity(), CurrenciesComponentProvider {
 
     @Inject
     lateinit var logger: BaseLogger
@@ -78,6 +80,10 @@ class MainActivity : AbstractActivity() {
     }
 
     fun getMainComponent(): MainComponent = mainComponent
+
+    override fun provideCurrenciesComponent(): CurrenciesComponent {
+       return getMainComponent().currenciesComponent().create()
+    }
 
 }
 

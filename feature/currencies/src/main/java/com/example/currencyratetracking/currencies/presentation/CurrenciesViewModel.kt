@@ -1,4 +1,4 @@
-package com.example.currencyratetracking.presentation.currencies
+package com.example.currencyratetracking.currencies.presentation
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -6,17 +6,17 @@ import com.example.currencyratetracking.api_locale.api.FavoriteCurrencyPairApi
 import com.example.currencyratetracking.api_remote.api.RatesApi
 import com.example.currencyratetracking.common_android.BaseLogger
 import com.example.currencyratetracking.core.AbstractViewModel
+import com.example.currencyratetracking.currencies.ModuleTag.TAG_LOG
+import com.example.currencyratetracking.currencies.toCurrency
+import com.example.currencyratetracking.currencies.toCurrencyPair
+import com.example.currencyratetracking.currencies.toFavoriteCurrencyPairDbo
 import com.example.currencyratetracking.model.CurrencyInfo
-import com.example.currencyratetracking.presentation.CurrencyUi
-import com.example.currencyratetracking.presentation.ModuleTag.TAG_LOG
-import com.example.currencyratetracking.presentation.toCurrency
-import com.example.currencyratetracking.presentation.toCurrencyPair
-import com.example.currencyratetracking.presentation.toFavoriteCurrencyPairDbo
+import com.example.currencyratetracking.model.CurrencyUi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
 
-internal class CurrenciesViewModel(
+class CurrenciesViewModel(
     private val api: RatesApi,
     private val favoriteCurrencyPairApi: FavoriteCurrencyPairApi,
     private val logger: BaseLogger,

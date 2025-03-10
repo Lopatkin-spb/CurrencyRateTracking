@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import com.example.currencyratetracking.api_locale.api.FavoriteCurrencyPairApi
 import com.example.currencyratetracking.common_android.BaseLogger
 import com.example.currencyratetracking.core.AbstractViewModel
-import com.example.currencyratetracking.presentation.CurrencyUi
+import com.example.currencyratetracking.model.CurrencyUi
 import com.example.currencyratetracking.presentation.ModuleTag.TAG_LOG
 import com.example.currencyratetracking.presentation.toCurrencyPair
 import kotlinx.coroutines.launch

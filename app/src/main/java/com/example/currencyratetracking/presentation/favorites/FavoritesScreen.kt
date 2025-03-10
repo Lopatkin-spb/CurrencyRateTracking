@@ -13,8 +13,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.currencyratetracking.R
+import com.example.currencyratetracking.core.CurrenciesListSection
+import com.example.currencyratetracking.core.OnLifecycleScreen
+import com.example.currencyratetracking.core.ScreenComponent
+import com.example.currencyratetracking.core.ToolbarComponent
 import com.example.currencyratetracking.presentation.*
-import com.example.currencyratetracking.presentation.theme.CurrencyRateTrackingTheme
+import com.example.currencyratetracking.ui_theme.CurrencyRateTrackingTheme
 import javax.inject.Inject
 
 

@@ -6,9 +6,8 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.currencyratetracking.presentation.currencies.CurrenciesScreen
+import com.example.currencyratetracking.currencies.presentation.CurrenciesScreen
 import com.example.currencyratetracking.presentation.favorites.FavoritesScreen
-
 
 @Composable
 internal fun BottomNavHost(

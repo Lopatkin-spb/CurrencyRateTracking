@@ -1,6 +1,6 @@
 package com.example.currencyratetracking.presentation.favorites
 
-import com.example.currencyratetracking.presentation.CurrencyUi
+import com.example.currencyratetracking.model.CurrencyUi
 
 
 internal data class FavoritesUiState(

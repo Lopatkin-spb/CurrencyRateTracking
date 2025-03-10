@@ -1,4 +1,4 @@
-package com.example.currencyratetracking.presentation.currencies
+package com.example.currencyratetracking.currencies.presentation
 
 import android.content.Context
 import androidx.annotation.StringRes
@@ -17,9 +17,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.currencyratetracking.R
-import com.example.currencyratetracking.presentation.*
-import com.example.currencyratetracking.presentation.theme.*
+import com.example.currencyratetracking.core.CurrenciesListSection
+import com.example.currencyratetracking.core.OnLifecycleScreen
+import com.example.currencyratetracking.core.ScreenComponent
+import com.example.currencyratetracking.core.ToolbarComponent
+import com.example.currencyratetracking.currencies.R
+import com.example.currencyratetracking.currencies.di.CurrenciesComponentProvider
+import com.example.currencyratetracking.ui_theme.*
 import javax.inject.Inject
 
 
@@ -31,11 +35,11 @@ class CurrenciesDaggerContainer {
 
 
 @Composable
-internal fun CurrenciesScreen(
+fun CurrenciesScreen(
     context: Context = LocalContext.current,
     container: CurrenciesDaggerContainer = remember {
         CurrenciesDaggerContainer().also { container ->
-            (context as MainActivity).getMainComponent().inject(container)
+            (context as CurrenciesComponentProvider).provideCurrenciesComponent().inject(container)
         }
     },
     viewModel: CurrenciesViewModel = viewModel(factory = container.viewModelFactory),
