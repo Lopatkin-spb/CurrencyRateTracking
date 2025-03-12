@@ -29,6 +29,7 @@ android {
 dependencies {
     implementation(project(":shared:model"))
     implementation(project(":shared:ui-theme"))
+    implementation(project(":shared:common"))
 
     /**
      * androidx
@@ -61,4 +62,9 @@ dependencies {
     implementation("androidx.compose.runtime:runtime-livedata")
     implementation("androidx.navigation:navigation-compose:2.7.7") //Navigation must update after next stable release (fix empty args)
 
+    /**
+     * Multithreading: Coroutines
+     */
+    implementation(libs.kotlinx.coroutines.android)
+    testImplementation(libs.kotlinx.coroutines.test)
 }

@@ -1,16 +1,13 @@
 package com.example.currencyratetracking.currencies.presentation
 
-import com.example.currencyratetracking.model.Currency
+import com.example.currencyratetracking.model.CurrencyActual
 
 
-//TODO: bug if value < 6 char from dot then added zero
-internal fun Currency.toActualCurrencyRateUi(): ActualCurrencyRateUi {
-    val quotation = String.format("%.6f", this.quotation)
-
+internal fun CurrencyActual.toActualCurrencyRateUi(): ActualCurrencyRateUi {
     return ActualCurrencyRateUi(
         id = this.id,
         text = this.charCode.name,
-        quotation = quotation,
-        isFavorite = false,
+        quotation = this.quotation.toString(),
+        isFavorite = this.isFavorite,
     )
 }

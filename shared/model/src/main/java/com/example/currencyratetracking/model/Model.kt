@@ -1,18 +1,26 @@
 package com.example.currencyratetracking.model
 
 
-public open class Currency(
-    public open val id: Long,
-    public open val charCode: CurrencyInfo,
-    public open val quotation: Double,
+public data class Currency(
+    public val id: Long,
+    public val charCode: CurrencyInfo,
+    public val quotation: Double,
 )
 
 
-public open class CurrencyPair(
-    public open val id: Long,
-    public open val charCodeBase: CurrencyInfo,
-    public open val charCodeSecond: CurrencyInfo,
-    public open val quotation: Double,
+public data class CurrencyActual(
+    public val id: Long,
+    public val charCode: CurrencyInfo,
+    public val quotation: Double,
+    public val isFavorite: Boolean,
+)
+
+
+public data class CurrencyPair(
+    public val id: Long,
+    public val charCodeBase: CurrencyInfo,
+    public val charCodeSecond: CurrencyInfo,
+    public val quotation: Double,
 )
 
 
