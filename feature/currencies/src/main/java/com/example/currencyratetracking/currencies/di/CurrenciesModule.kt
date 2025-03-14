@@ -48,6 +48,7 @@ internal interface InternalPresentationModule {
             getListActualCurrencyRatesByBaseCharCodeUseCase: GetListActualCurrencyRatesByBaseCharCodeUseCase,
             getUserSelectedBaseCurrencyUseCase: GetUserSelectedBaseCurrencyUseCase,
             setUserSelectedBaseCurrencyUseCase: SetUserSelectedBaseCurrencyUseCase,
+            getListActualCurrencyRatesWithSortByBaseCharCodeUseCase: GetListActualCurrencyRatesWithSortByBaseCharCodeUseCase,
             dispatcher: BaseCoroutineDispatcher,
         ): ViewModelFactory {
             return ViewModelFactory(
@@ -59,6 +60,7 @@ internal interface InternalPresentationModule {
                 getListActualCurrencyRatesByBaseCharCodeUseCase = getListActualCurrencyRatesByBaseCharCodeUseCase,
                 setUserSelectedBaseCurrencyUseCase = setUserSelectedBaseCurrencyUseCase,
                 getUserSelectedBaseCurrencyUseCase = getUserSelectedBaseCurrencyUseCase,
+                getListActualCurrencyRatesWithSortByBaseCharCodeUseCase = getListActualCurrencyRatesWithSortByBaseCharCodeUseCase,
             )
         }
     }
@@ -125,4 +127,9 @@ internal interface InternalDomainModule {
     @Binds
     fun bindSaveLastOpenedBaseCurrencyUseCase(impl: SetUserSelectedBaseCurrencyUseCaseImpl): SetUserSelectedBaseCurrencyUseCase
 
+    @FragmentScope
+    @Binds
+    fun bindGetListActualCurrencyRatesWithSortByBaseCharCodeUseCase(
+        impl: GetListActualCurrencyRatesWithSortByBaseCharCodeUseCaseImpl
+    ): GetListActualCurrencyRatesWithSortByBaseCharCodeUseCase
 }

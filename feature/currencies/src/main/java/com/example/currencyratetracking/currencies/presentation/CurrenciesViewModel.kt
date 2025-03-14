@@ -8,6 +8,7 @@ import com.example.currencyratetracking.core.*
 import com.example.currencyratetracking.currencies.ModuleTag.TAG_LOG
 import com.example.currencyratetracking.currencies.domain.*
 import com.example.currencyratetracking.model.CurrencyUi
+import com.example.currencyratetracking.model.Sorting
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.flow.*
@@ -21,6 +22,7 @@ class CurrenciesViewModel(
     private val getListActualCurrencyRatesByBaseCharCodeUseCase: GetListActualCurrencyRatesByBaseCharCodeUseCase,
     private val getUserSelectedBaseCurrencyUseCase: GetUserSelectedBaseCurrencyUseCase,
     private val setUserSelectedBaseCurrencyUseCase: SetUserSelectedBaseCurrencyUseCase,
+    private val getListActualCurrencyRatesWithSortByBaseCharCodeUseCase: GetListActualCurrencyRatesWithSortByBaseCharCodeUseCase,
     private val dispatcher: BaseCoroutineDispatcher,
     private val logger: BaseLogger,
 ) : AbstractViewModel() {
@@ -38,6 +40,8 @@ class CurrenciesViewModel(
             "com.example.currencyratetracking.currencies.presentation.LOAD_BASE_CURRENCY_KEY"
         private const val SAVE_BASE_CURRENCY_KEY: String =
             "com.example.currencyratetracking.currencies.presentation.SAVE_BASE_CURRENCY_KEY"
+        private const val LOAD_LIST_ACTUAL_CURRENCY_RATES_WITH_SORT_KEY: String =
+            "com.example.currencyratetracking.currencies.presentation.LOAD_LIST_ACTUAL_CURRENCY_RATES_WITH_SORT_KEY"
     }
 
     //TODO: add loading
@@ -79,23 +83,30 @@ class CurrenciesViewModel(
 
             is CurrenciesUserEvent.OnOpenFilters -> {
                 logger.i(TAG_LOG, "$NAME_FULL OnOpenFilters")
-                _uiState.value = _uiState.value?.copy(isFilters = true)
+                _uiState.value = _uiState.value?.copy(isFiltersLifecycle = true)
             }
 
             is CurrenciesUserEvent.OnCloseFilters -> {
                 logger.i(TAG_LOG, "$NAME_FULL OnCloseFilters")
-                _uiState.value = _uiState.value?.copy(isFilters = false)
+                _uiState.value = _uiState.value?.copy(isFiltersLifecycle = false)
             }
 
             is CurrenciesUserEvent.OnResetFiltersState -> {
                 logger.i(TAG_LOG, "$NAME_FULL OnResetFiltersState")
-                _uiState.value = _uiState.value?.copy(isFilters = null)
+                _uiState.value = _uiState.value?.copy(isFiltersLifecycle = null)
             }
 
             is CurrenciesUserEvent.OnApplyFilters -> {
                 logger.i(TAG_LOG, "$NAME_FULL OnApplyFilters")
-                _uiState.value = _uiState.value?.copy(isFilters = false)
-//todo: loadInfoWithSorting
+                _uiState.value = _uiState.value?.copy(isFiltersLifecycle = false, isSortingEnabled = true)
+                _uiState.value?.let { state ->
+                    loadListActualCurrencyRatesWithSort(state.showedBaseCurrency, state.sorting)
+                }
+            }
+
+            is CurrenciesUserEvent.OnSortingSelect -> {
+                logger.i(TAG_LOG, "$NAME_FULL OnSortingSelect")
+                _uiState.value = _uiState.value?.copy(sorting = new.select)
             }
         }
     }
@@ -129,7 +140,9 @@ class CurrenciesViewModel(
                 .onEach { result ->
                     if (result) _uiState.value = _uiState.value?.copy(showedBaseCurrency = currency)
                     logger.v(TAG_LOG, "$NAME_FULL success")
-                    if (result) loadListActualCurrencyRates(currency)
+                    if (result && _uiState.value?.isSortingEnabled == false) loadListActualCurrencyRates(currency)
+                    if (result && _uiState.value?.isSortingEnabled == true)
+                        loadListActualCurrencyRatesWithSort(currency, _uiState.value?.sorting)
                 }
                 .catchCancellation { logger.v(TAG_LOG, "$NAME_FULL cancel") }
                 .catchException { logger.w(TAG_LOG, "$NAME_FULL ${it.message}", it) }
@@ -169,6 +182,29 @@ class CurrenciesViewModel(
                 .onEach { list ->
                     _uiState.value = _uiState.value?.copy(listActualCurrencyRates = list)
                     logger.v(TAG_LOG, "$NAME_FULL success")
+                }
+                .catchCancellation { logger.v(TAG_LOG, "$NAME_FULL cancel") }
+                .catchException { logger.w(TAG_LOG, "$NAME_FULL ${it.message}", it) }
+                .onCompletion { finally -> logger.d(TAG_LOG, "$NAME_FULL ended") }
+                .collect()
+        }
+    }
+
+
+    private fun loadListActualCurrencyRatesWithSort(name: String, sorting: Sorting?) {
+        viewModelScope.launch(
+            dispatcher.main() + exceptionHandler
+                    + CoroutineName(LOAD_LIST_ACTUAL_CURRENCY_RATES_WITH_SORT_KEY)
+        ) {
+            getListActualCurrencyRatesWithSortByBaseCharCodeUseCase.execute(name, sorting)
+                .onStart { logger.d(TAG_LOG, "$NAME_FULL onStart") }
+                .map { model -> model.toActualCurrencyRateUi() }
+                .transformToList()
+                .cancellable()
+                .flowOn(dispatcher.io())
+                .onEach { list ->
+                    _uiState.value = _uiState.value?.copy(listActualCurrencyRates = list)
+                    logger.v(TAG_LOG, "$NAME_FULL success list=$list")
                 }
                 .catchCancellation { logger.v(TAG_LOG, "$NAME_FULL cancel") }
                 .catchException { logger.w(TAG_LOG, "$NAME_FULL ${it.message}", it) }

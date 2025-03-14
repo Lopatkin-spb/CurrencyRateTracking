@@ -1,6 +1,7 @@
 package com.example.currencyratetracking.currencies.domain
 
 import com.example.currencyratetracking.model.CurrencyActual
+import com.example.currencyratetracking.model.Sorting
 import kotlinx.coroutines.flow.Flow
 
 
@@ -21,6 +22,11 @@ interface DeletePairCurrenciesFromFavoriteByCharCodesUseCase {
 
 interface GetListActualCurrencyRatesByBaseCharCodeUseCase {
     fun execute(base: String): Flow<CurrencyActual>
+}
+
+
+interface GetListActualCurrencyRatesWithSortByBaseCharCodeUseCase {
+    fun execute(base: String, sorting: Sorting?): Flow<CurrencyActual>
 }
 
 

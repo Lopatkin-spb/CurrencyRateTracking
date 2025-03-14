@@ -25,6 +25,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.currencyratetracking.core.*
 import com.example.currencyratetracking.currencies.R
 import com.example.currencyratetracking.currencies.di.CurrenciesComponentProvider
+import com.example.currencyratetracking.model.Sorting
 import com.example.currencyratetracking.ui_theme.*
 import javax.inject.Inject
 
@@ -83,7 +84,7 @@ private fun Content(
             onFavoriteEvent = { data -> onEvent(CurrenciesUserEvent.OnChangeFavoriteState(data)) },
         )
 
-        if (uiState.isFilters != null) {
+        if (uiState.isFiltersLifecycle != null) {
             FiltersSection(modifier = modifier, uiState = uiState, onEvent = onEvent)
         }
     }
@@ -244,7 +245,7 @@ private fun FiltersSection(
     onEvent: (CurrenciesUserEvent) -> Unit,
 ) {
     ModalBottomSheetWithOutsideControl(
-        state = uiState.isFilters,
+        state = uiState.isFiltersLifecycle,
         onResetState = { onEvent(CurrenciesUserEvent.OnResetFiltersState) },
         sheetContent = { SheetContent(modifier, uiState, onEvent) },
     )
@@ -298,41 +299,41 @@ private fun SortingSection(
         )
 
         Column(modifier = Modifier.padding(top = 32.dp).selectableGroup()) {
-            SortingItem(
-                selected = true,
-                text = R.string.text_sorting_code_a_z
+            SortingSelectComponent(
+                selected = uiState.sorting == Sorting.CodeAZ,
+                text = R.string.text_sorting_code_a_z,
+                onClick = { onEvent(CurrenciesUserEvent.OnSortingSelect(Sorting.CodeAZ)) },
             )
-            SortingItem(
-                modifier = Modifier,
-                selected = false,
-                text = R.string.text_sorting_code_z_a
+            SortingSelectComponent(
+                selected = uiState.sorting == Sorting.CodeZA,
+                text = R.string.text_sorting_code_z_a,
+                onClick = { onEvent(CurrenciesUserEvent.OnSortingSelect(Sorting.CodeZA)) },
             )
-            SortingItem(
-                modifier = Modifier,
-                selected = false,
-                text = R.string.text_sorting_quote_asc
+            SortingSelectComponent(
+                selected = uiState.sorting == Sorting.QuoteAsc,
+                text = R.string.text_sorting_quote_asc,
+                onClick = { onEvent(CurrenciesUserEvent.OnSortingSelect(Sorting.QuoteAsc)) },
             )
-            SortingItem(
-                modifier = Modifier,
-                selected = false,
-                text = R.string.text_sorting_quote_desc
+            SortingSelectComponent(
+                selected = uiState.sorting == Sorting.QuoteDesc,
+                text = R.string.text_sorting_quote_desc,
+                onClick = { onEvent(CurrenciesUserEvent.OnSortingSelect(Sorting.QuoteDesc)) },
             )
         }
     }
 }
 
 @Composable
-private fun SortingItem(
+private fun SortingSelectComponent(
     modifier: Modifier = Modifier,
     selected: Boolean,
     @StringRes text: Int,
+    onClick: () -> Unit,
 ) {
     Row(
         modifier = modifier.height(48.dp).fillMaxWidth().selectable(
             selected = selected,
-            onClick = {
-                //TODO: logic
-            },
+            onClick = onClick,
         ),
     ) {
 
@@ -369,7 +370,7 @@ private fun ScreenPreview() {
         }
 
         Content(
-            uiState = CurrenciesUiState(listActualCurrencyRates = listStub, isFilters = true),
+            uiState = CurrenciesUiState(listActualCurrencyRates = listStub, isFiltersLifecycle = true),
             onEvent = {}
         )
 //        }

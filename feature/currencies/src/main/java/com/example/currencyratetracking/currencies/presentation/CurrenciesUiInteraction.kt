@@ -1,13 +1,16 @@
 package com.example.currencyratetracking.currencies.presentation
 
 import com.example.currencyratetracking.model.CurrencyUi
+import com.example.currencyratetracking.model.Sorting
 
 
 data class CurrenciesUiState(
     val showedBaseCurrency: String = "",
     val listBaseCurrencies: List<String> = emptyList(),
     val listActualCurrencyRates: List<ActualCurrencyRateUi> = emptyList(),
-    val isFilters: Boolean? = null,
+    val isFiltersLifecycle: Boolean? = null,
+    val sorting: Sorting = Sorting.CodeAZ,
+    val isSortingEnabled: Boolean = false,
 )
 
 
@@ -28,4 +31,5 @@ sealed interface CurrenciesUserEvent {
     data object OnCloseFilters : CurrenciesUserEvent
     data object OnResetFiltersState : CurrenciesUserEvent
     data object OnApplyFilters : CurrenciesUserEvent
+    data class OnSortingSelect(val select: Sorting) : CurrenciesUserEvent
 }

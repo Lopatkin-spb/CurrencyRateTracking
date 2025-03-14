@@ -16,6 +16,7 @@ class ViewModelFactory(
     private val dispatcher: BaseCoroutineDispatcher,
     private val getUserSelectedBaseCurrencyUseCase: GetUserSelectedBaseCurrencyUseCase,
     private val setUserSelectedBaseCurrencyUseCase: SetUserSelectedBaseCurrencyUseCase,
+    private val getListActualCurrencyRatesWithSortByBaseCharCodeUseCase: GetListActualCurrencyRatesWithSortByBaseCharCodeUseCase,
 ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -29,6 +30,7 @@ class ViewModelFactory(
                 getListActualCurrencyRatesByBaseCharCodeUseCase = getListActualCurrencyRatesByBaseCharCodeUseCase,
                 getUserSelectedBaseCurrencyUseCase = getUserSelectedBaseCurrencyUseCase,
                 setUserSelectedBaseCurrencyUseCase = setUserSelectedBaseCurrencyUseCase,
+                getListActualCurrencyRatesWithSortByBaseCharCodeUseCase = getListActualCurrencyRatesWithSortByBaseCharCodeUseCase,
             ) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class: $modelClass")
