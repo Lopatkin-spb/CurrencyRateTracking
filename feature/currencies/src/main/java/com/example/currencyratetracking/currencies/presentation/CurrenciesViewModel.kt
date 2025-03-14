@@ -76,6 +76,27 @@ class CurrenciesViewModel(
                 if (new.currency.isFavorite) savePairToFavorite(new.currency)
                 else deletePairFromFavorite(new.currency)
             }
+
+            is CurrenciesUserEvent.OnOpenFilters -> {
+                logger.i(TAG_LOG, "$NAME_FULL OnOpenFilters")
+                _uiState.value = _uiState.value?.copy(isFilters = true)
+            }
+
+            is CurrenciesUserEvent.OnCloseFilters -> {
+                logger.i(TAG_LOG, "$NAME_FULL OnCloseFilters")
+                _uiState.value = _uiState.value?.copy(isFilters = false)
+            }
+
+            is CurrenciesUserEvent.OnResetFiltersState -> {
+                logger.i(TAG_LOG, "$NAME_FULL OnResetFiltersState")
+                _uiState.value = _uiState.value?.copy(isFilters = null)
+            }
+
+            is CurrenciesUserEvent.OnApplyFilters -> {
+                logger.i(TAG_LOG, "$NAME_FULL OnApplyFilters")
+                _uiState.value = _uiState.value?.copy(isFilters = false)
+//todo: loadInfoWithSorting
+            }
         }
     }
 

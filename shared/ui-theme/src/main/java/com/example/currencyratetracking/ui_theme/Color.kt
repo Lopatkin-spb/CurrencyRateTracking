@@ -14,11 +14,13 @@ val Secondary = Color(0xFF9DACDC)
 
 val Yellow = Color(0xFFFFB800)
 val Outline = Color(0xFFEBEBEB)
+val White = Color(0xFFFFFFFF)
 
 /**
  * Fonts
  */
 val TextDefault = Color(0xFF343138)
+val TextSecondary = Color(0xFF767676)
 
 /**
  * Bg

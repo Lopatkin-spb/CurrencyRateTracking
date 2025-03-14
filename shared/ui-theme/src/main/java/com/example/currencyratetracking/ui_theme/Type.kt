@@ -20,6 +20,15 @@ val Typography = Typography(
         textAlign = TextAlign.Start,
     ),
 
+    h2 = TextStyle(
+        fontFamily = FontFamily.SansSerif,
+        fontWeight = FontWeight.Bold,
+        fontSize = 12.sp,
+        color = TextSecondary,
+        lineHeight = 20.sp,
+        textAlign = TextAlign.Start,
+    ),
+
     subtitle1 = TextStyle(
         fontFamily = FontFamily.SansSerif,
         fontWeight = FontWeight.SemiBold,
@@ -36,6 +45,23 @@ val Typography = Typography(
         color = TextDefault,
         lineHeight = 20.sp,
         textAlign = TextAlign.Start,
+    ),
+
+    body1 = TextStyle(
+        fontFamily = FontFamily.SansSerif,
+        fontWeight = FontWeight.Medium,
+        fontSize = 16.sp,
+        color = TextDefault,
+        lineHeight = 20.sp,
+        textAlign = TextAlign.Start,
+    ),
+
+    button = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Medium,
+        fontSize = 14.sp,
+        lineHeight = 20.sp,
+        textAlign = TextAlign.Center,
     ),
 
     /* Other default text styles to override

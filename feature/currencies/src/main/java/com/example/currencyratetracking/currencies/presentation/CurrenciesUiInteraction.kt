@@ -7,6 +7,7 @@ data class CurrenciesUiState(
     val showedBaseCurrency: String = "",
     val listBaseCurrencies: List<String> = emptyList(),
     val listActualCurrencyRates: List<ActualCurrencyRateUi> = emptyList(),
+    val isFilters: Boolean? = null,
 )
 
 
@@ -23,4 +24,8 @@ sealed interface CurrenciesUserEvent {
     data object OnScreenClose : CurrenciesUserEvent
     data class OnChangeBaseCurrency(val name: String) : CurrenciesUserEvent
     data class OnChangeFavoriteState(val currency: CurrencyUi) : CurrenciesUserEvent
+    data object OnOpenFilters : CurrenciesUserEvent
+    data object OnCloseFilters : CurrenciesUserEvent
+    data object OnResetFiltersState : CurrenciesUserEvent
+    data object OnApplyFilters : CurrenciesUserEvent
 }

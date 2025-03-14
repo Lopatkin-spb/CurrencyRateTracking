@@ -4,7 +4,11 @@ import android.content.Context
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -13,14 +17,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.currencyratetracking.core.CurrenciesListSection
-import com.example.currencyratetracking.core.OnLifecycleScreen
-import com.example.currencyratetracking.core.ScreenComponent
-import com.example.currencyratetracking.core.ToolbarComponent
+import com.example.currencyratetracking.core.*
 import com.example.currencyratetracking.currencies.R
 import com.example.currencyratetracking.currencies.di.CurrenciesComponentProvider
 import com.example.currencyratetracking.ui_theme.*
@@ -80,6 +82,10 @@ private fun Content(
             list = uiState.listActualCurrencyRates,
             onFavoriteEvent = { data -> onEvent(CurrenciesUserEvent.OnChangeFavoriteState(data)) },
         )
+
+        if (uiState.isFilters != null) {
+            FiltersSection(modifier = modifier, uiState = uiState, onEvent = onEvent)
+        }
     }
 }
 
@@ -112,14 +118,15 @@ private fun ToolbarSelectComponent(
                 modifier = Modifier
                     .padding(start = 10.dp)
                     .size(48.dp)
-                    .background(Default, shape = MaterialTheme.shapes.medium)
-                    .border(width = 1.dp, color = Secondary, shape = MaterialTheme.shapes.medium),
+                    .background(Default, shape = MaterialTheme.shapes.small)
+                    .border(width = 1.dp, color = Secondary, shape = MaterialTheme.shapes.small)
+                    .clickable(onClick = { onEvent(CurrenciesUserEvent.OnOpenFilters) }),
             ) {
                 Icon(
                     modifier = Modifier.size(24.dp).align(Alignment.Center),
                     painter = painterResource(R.drawable.ic_filter_24),
                     contentDescription = null,
-                    tint = Primary,
+//                    tint = Primary,
                 )
             }
         }
@@ -145,8 +152,8 @@ private fun CurrencyDropdownComponent(
                 val dp = it.width.toFloat() / screenPixelsDensity
                 width.value = dp
             }
-            .background(Default, shape = MaterialTheme.shapes.medium)
-            .border(width = 1.dp, color = Secondary, shape = MaterialTheme.shapes.medium),
+            .background(Default, shape = MaterialTheme.shapes.small)
+            .border(width = 1.dp, color = Secondary, shape = MaterialTheme.shapes.small),
     ) {
         Text(
             modifier = Modifier
@@ -182,8 +189,8 @@ private fun CurrencyDropdownComponent(
             modifier = Modifier
                 .wrapContentHeight()
                 .width(width.value.dp)
-                .background(Default, shape = MaterialTheme.shapes.medium)
-                .border(width = 1.dp, color = Secondary, shape = MaterialTheme.shapes.medium),
+                .background(Default, shape = MaterialTheme.shapes.small)
+                .border(width = 1.dp, color = Secondary, shape = MaterialTheme.shapes.small),
             expanded = expanded.value,
             onDismissRequest = { expanded.value = false },
             offset = DpOffset(0.dp, (-48).dp)
@@ -230,6 +237,119 @@ private fun CurrencyDropdownComponent(
 }
 
 
+@Composable
+private fun FiltersSection(
+    modifier: Modifier = Modifier,
+    uiState: CurrenciesUiState,
+    onEvent: (CurrenciesUserEvent) -> Unit,
+) {
+    ModalBottomSheetWithOutsideControl(
+        state = uiState.isFilters,
+        onResetState = { onEvent(CurrenciesUserEvent.OnResetFiltersState) },
+        sheetContent = { SheetContent(modifier, uiState, onEvent) },
+    )
+}
+
+
+@Composable
+private fun SheetContent(
+    modifier: Modifier = Modifier,
+    uiState: CurrenciesUiState,
+    onEvent: (CurrenciesUserEvent) -> Unit,
+) {
+    ScreenColumnComponent {
+
+        ToolbarComponent(
+            title = R.string.title_filters,
+            leadingIcon = R.drawable.ic_arrow_back_24,
+            onLeadingIcon = { onEvent(CurrenciesUserEvent.OnCloseFilters) },
+        )
+
+        SortingSection(
+            modifier = Modifier.wrapContentHeight().fillMaxWidth()
+                .padding(vertical = 16.dp, horizontal = 16.dp),
+            uiState = uiState,
+            onEvent = onEvent,
+        )
+
+        Spacer(modifier = Modifier.weight(weight = 1f, fill = true))
+
+        ButtonWithTextComponent(
+            modifier = Modifier.padding(all = 16.dp).fillMaxWidth().height(40.dp),
+            text = R.string.action_apply,
+            onClick = { onEvent(CurrenciesUserEvent.OnApplyFilters) },
+        )
+    }
+}
+
+
+@Composable
+private fun SortingSection(
+    modifier: Modifier = Modifier,
+    uiState: CurrenciesUiState,
+    onEvent: (CurrenciesUserEvent) -> Unit,
+) {
+
+    Box(modifier = modifier) {
+        Text(
+            modifier = Modifier.wrapContentSize().align(Alignment.TopStart),
+            text = stringResource(R.string.header_sort_by),
+            style = MaterialTheme.typography.h2,
+        )
+
+        Column(modifier = Modifier.padding(top = 32.dp).selectableGroup()) {
+            SortingItem(
+                selected = true,
+                text = R.string.text_sorting_code_a_z
+            )
+            SortingItem(
+                modifier = Modifier,
+                selected = false,
+                text = R.string.text_sorting_code_z_a
+            )
+            SortingItem(
+                modifier = Modifier,
+                selected = false,
+                text = R.string.text_sorting_quote_asc
+            )
+            SortingItem(
+                modifier = Modifier,
+                selected = false,
+                text = R.string.text_sorting_quote_desc
+            )
+        }
+    }
+}
+
+@Composable
+private fun SortingItem(
+    modifier: Modifier = Modifier,
+    selected: Boolean,
+    @StringRes text: Int,
+) {
+    Row(
+        modifier = modifier.height(48.dp).fillMaxWidth().selectable(
+            selected = selected,
+            onClick = {
+                //TODO: logic
+            },
+        ),
+    ) {
+
+        Text(
+            modifier = Modifier.wrapContentHeight().weight(weight = 1f, fill = true).align(Alignment.CenterVertically),
+            text = stringResource(text),
+            style = MaterialTheme.typography.body1,
+        )
+        RadioButton(
+            selected = selected,
+            onClick = {},
+            colors = RadioButtonDefaults.colors(selectedColor = Primary, unselectedColor = Secondary),
+        )
+    }
+}
+
+
 @Preview(showSystemUi = true)
 @Composable
 private fun ScreenPreview() {
@@ -249,7 +369,7 @@ private fun ScreenPreview() {
         }
 
         Content(
-            uiState = CurrenciesUiState(listActualCurrencyRates = listStub),
+            uiState = CurrenciesUiState(listActualCurrencyRates = listStub, isFilters = true),
             onEvent = {}
         )
 //        }
