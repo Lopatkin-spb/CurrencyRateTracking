@@ -9,6 +9,7 @@ import androidx.navigation.compose.composable
 import com.example.currencyratetracking.currencies.presentation.CurrenciesScreen
 import com.example.currencyratetracking.presentation.favorites.FavoritesScreen
 
+
 @Composable
 internal fun BottomNavHost(
     modifier: Modifier = Modifier,
@@ -17,12 +18,12 @@ internal fun BottomNavHost(
     NavHost(
         modifier = modifier,
         navController = navController,
-        startDestination = Currencies.uniqueTag,
+        startDestination = AppDestination.Currencies.uniqueTag,
     ) {
-        composable(route = Currencies.uniqueTag) {
+        composable(route = AppDestination.Currencies.uniqueTag) {
             CurrenciesScreen()
         }
-        composable(route = Favorites.uniqueTag) {
+        composable(route = AppDestination.Favorites.uniqueTag) {
             FavoritesScreen()
         }
     }

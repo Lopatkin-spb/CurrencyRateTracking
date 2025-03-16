@@ -2,15 +2,17 @@ package com.example.currencyratetracking.presentation
 
 import android.os.Bundle
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -40,11 +42,7 @@ class MainActivity : AbstractActivity(), CurrenciesComponentProvider {
         logger.d(TAG_LOG, "$NAME_FULL started")
         setContent {
             CurrencyRateTrackingTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background) {
-//                    Greeting("Android")
-                    Content()
-                }
+                Content()
             }
         }
     }
@@ -82,23 +80,10 @@ class MainActivity : AbstractActivity(), CurrenciesComponentProvider {
     fun getMainComponent(): MainComponent = mainComponent
 
     override fun provideCurrenciesComponent(): CurrenciesComponent {
-       return getMainComponent().currenciesComponent().create()
+        return getMainComponent().currenciesComponent().create()
     }
 
 }
-
-//@Composable
-//fun Greeting(name: String) {
-//    Text(text = "Hello $name!")
-//}
-//
-//@Preview(showBackground = true)
-//@Composable
-//fun DefaultPreview() {
-//    CurrencyRateTrackingTheme {
-//        Greeting("Android")
-//    }
-//}
 
 
 @Composable
@@ -106,64 +91,79 @@ private fun Content(
     modifier: Modifier = Modifier,
 ) {
     val navController = rememberNavController()
+    Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
 
-    Scaffold(
-        bottomBar = { BottomNavBar(navController) },
-    ) { innerPadding ->
-        BottomNavHost(
-            modifier = modifier
-                .padding(innerPadding),
-            navController = navController,
-        )
-    }
-}
-
-
-@Composable
-private fun BottomNavBar(
-    navController: NavHostController,
-) {
-    BottomNavigation(
-//        backgroundColor = colorResource(R.color.black),
-    ) {
-        val currentBackstack by navController.currentBackStackEntryAsState()
-        val currentDestination = currentBackstack?.destination
-
-        bottomNavDestinations.forEach { destination ->
-
-            BottomNavigationItem(
-                icon = {
-                    Icon(
-                        painter = painterResource(destination.iconId),
-                        contentDescription = null,
-                    )
-                },
-                label = {
-                    Text(
-                        text = stringResource(destination.titleId),
-                    )
-                },
-//                selectedContentColor = colorResource(R.color.blue),
-//                unselectedContentColor = colorResource(R.color.gray_6),
-                alwaysShowLabel = false,
-                selected = currentDestination?.hierarchy?.any { it.route == destination.uniqueTag } == true,
-                onClick = { navController.navigateSingleTopTo(route = destination.uniqueTag) },
+        Scaffold(
+            bottomBar = {
+                BottomNavigationComponent(navController = navController, destinationList = AppDestination.toList)
+            },
+        ) { innerPadding ->
+            BottomNavHost(
+                modifier = modifier.padding(innerPadding),
+                navController = navController,
             )
         }
     }
 }
 
 
-@Preview(showSystemUi = true)
 @Composable
-private fun ScreenPreview() {
-    CurrencyRateTrackingTheme {
-        // A surface container using the 'background' color from the theme
-        Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background) {
-            Content()
+private fun BottomNavigationComponent(
+    modifier: Modifier = Modifier,
+    navController: NavHostController,
+    destinationList: List<AppDestination>,
+) {
+
+    Column(modifier = Modifier.wrapContentSize()) {
+
+        Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(MaterialTheme.colorScheme.outline))
+        NavigationBar(
+            modifier = Modifier.height(68.dp).fillMaxWidth(),
+            containerColor = MaterialTheme.colorScheme.background,
+        ) {
+            val currentBackstack by navController.currentBackStackEntryAsState()
+            val currentDestination = currentBackstack?.destination
+
+            destinationList.forEach { destination ->
+
+                val isSelected = currentDestination?.hierarchy?.any { it.route == destination.uniqueTag } == true
+                val fontWeightSelected = if (isSelected) {
+                    FontWeight.SemiBold
+                } else {
+                    FontWeight.Medium
+                }
+
+                NavigationBarItem(
+                    icon = { Icon(painter = painterResource(destination.iconId), contentDescription = null) },
+                    label = {
+                        Text(
+                            text = stringResource(destination.titleId),
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = fontWeightSelected,
+                        )
+                    },
+                    colors = NavigationBarItemDefaults.colors(
+                        selectedIconColor = MaterialTheme.colorScheme.primary,
+                        selectedTextColor = MaterialTheme.colorScheme.onBackground,
+                        unselectedIconColor = MaterialTheme.colorScheme.secondary,
+                        unselectedTextColor = MaterialTheme.colorScheme.secondary,
+                        indicatorColor = MaterialTheme.colorScheme.primaryContainer,
+                    ),
+                    alwaysShowLabel = true,
+                    selected = isSelected,
+                    onClick = { navController.navigateSingleTopTo(route = destination.uniqueTag) },
+                )
+            }
         }
     }
 }
 
-//add menu, first screen
-// up kotlin ver to 1.9 to top build gradle
+
+//todo: bug-dont work
+@Preview(showSystemUi = true)
+@Composable
+private fun ScreenPreview() {
+    CurrencyRateTrackingTheme {
+        Content()
+    }
+}

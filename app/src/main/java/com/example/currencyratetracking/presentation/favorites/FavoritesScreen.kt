@@ -13,9 +13,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.currencyratetracking.R
-import com.example.currencyratetracking.core.CurrenciesListSection
+import com.example.currencyratetracking.core.CardsListSection
 import com.example.currencyratetracking.core.OnLifecycleScreen
-import com.example.currencyratetracking.core.ScreenComponent
+import com.example.currencyratetracking.core.ScreenBoxComponent
 import com.example.currencyratetracking.core.ToolbarComponent
 import com.example.currencyratetracking.presentation.*
 import com.example.currencyratetracking.ui_theme.CurrencyRateTrackingTheme
@@ -60,11 +60,11 @@ private fun Content(
     onEvent: (FavoritesUserEvent) -> Unit,
 ) {
 
-    ScreenComponent {
+    ScreenBoxComponent {
 
         ToolbarComponent(title = R.string.title_favorites)
 
-        CurrenciesListSection(
+        CardsListSection(
             modifier = Modifier.padding(start = 16.dp, top = 65.dp, end = 16.dp),
             list = uiState.listFavorites,
             onFavoriteEvent = { data -> onEvent(FavoritesUserEvent.OnChangeFavoriteState(data)) },
@@ -76,21 +76,18 @@ private fun Content(
 @Preview(showSystemUi = true)
 @Composable
 private fun ScreenPreview() {
+    val listStub = mutableListOf<FavoriteCurrencyRate>()
+    for (index in 1L..5) {
+        val item = FavoriteCurrencyRate(
+            id = index,
+            text = "SDDF/JHY",
+            quotation = "3.932455",
+            isFavorite = true,
+        )
+        listStub.add(item)
+    }
+
     CurrencyRateTrackingTheme {
-//         A surface container using the 'background' color from the theme
-//        Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background) {
-
-        val listStub = mutableListOf<FavoriteCurrencyRate>()
-        for (index in 1L..5) {
-            val item = FavoriteCurrencyRate(
-                id = index,
-                text = "SDDF/JHY",
-                quotation = "3.932455",
-                isFavorite = true,
-            )
-            listStub.add(item)
-        }
-
         Content(
             onEvent = {},
             uiState = FavoritesUiState(listFavorites = listStub),

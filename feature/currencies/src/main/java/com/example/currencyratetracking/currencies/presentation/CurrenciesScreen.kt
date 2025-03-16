@@ -6,10 +6,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -26,7 +25,9 @@ import com.example.currencyratetracking.core.*
 import com.example.currencyratetracking.currencies.R
 import com.example.currencyratetracking.currencies.di.CurrenciesComponentProvider
 import com.example.currencyratetracking.model.Sorting
-import com.example.currencyratetracking.ui_theme.*
+import com.example.currencyratetracking.ui_theme.CurrencyRateTrackingTheme
+import com.example.currencyratetracking.ui_theme.Default
+import com.example.currencyratetracking.ui_theme.Secondary
 import javax.inject.Inject
 
 
@@ -70,7 +71,7 @@ private fun Content(
     onEvent: (CurrenciesUserEvent) -> Unit,
 ) {
 
-    ScreenComponent {
+    ScreenBoxComponent {
 
         ToolbarSelectComponent(
             title = R.string.title_currencies,
@@ -78,7 +79,7 @@ private fun Content(
             onEvent = onEvent,
         )
 
-        CurrenciesListSection(
+        CardsListSection(
             modifier = Modifier.padding(start = 16.dp, top = 133.dp, end = 16.dp),
             list = uiState.listActualCurrencyRates,
             onFavoriteEvent = { data -> onEvent(CurrenciesUserEvent.OnChangeFavoriteState(data)) },
@@ -91,7 +92,7 @@ private fun Content(
 }
 
 
-//TODO: bug add surface to toolbar
+//TODO: add surface to toolbar
 @Composable
 private fun ToolbarSelectComponent(
     modifier: Modifier = Modifier,
@@ -102,10 +103,8 @@ private fun ToolbarSelectComponent(
     ToolbarComponent(title = title) {
 
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(68.dp)
-                .background(Header)
+            modifier = Modifier.fillMaxWidth().height(68.dp)
+                .background(MaterialTheme.colorScheme.surface)
                 .padding(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 12.dp),
         ) {
 
@@ -119,22 +118,26 @@ private fun ToolbarSelectComponent(
                 modifier = Modifier
                     .padding(start = 10.dp)
                     .size(48.dp)
-                    .background(Default, shape = MaterialTheme.shapes.small)
-                    .border(width = 1.dp, color = Secondary, shape = MaterialTheme.shapes.small)
+                    .background(MaterialTheme.colorScheme.background, shape = MaterialTheme.shapes.small)
+                    .border(
+                        width = 1.dp,
+                        color = MaterialTheme.colorScheme.secondary,
+                        shape = MaterialTheme.shapes.small,
+                    )
                     .clickable(onClick = { onEvent(CurrenciesUserEvent.OnOpenFilters) }),
             ) {
                 Icon(
                     modifier = Modifier.size(24.dp).align(Alignment.Center),
                     painter = painterResource(R.drawable.ic_filter_24),
                     contentDescription = null,
-//                    tint = Primary,
+                    tint = MaterialTheme.colorScheme.primary,
                 )
             }
         }
     }
 }
 
-
+//todo: optimize code
 @Composable
 private fun CurrencyDropdownComponent(
     modifier: Modifier = Modifier,
@@ -144,6 +147,11 @@ private fun CurrencyDropdownComponent(
 ) {
     val expanded = remember { mutableStateOf(false) }
     val width = remember { mutableStateOf(0f) }
+    val iconId = if (expanded.value) {
+        R.drawable.ic_arrow_up_24
+    } else {
+        R.drawable.ic_arrow_down_24
+    }
 
     Row(
         modifier = modifier
@@ -153,37 +161,26 @@ private fun CurrencyDropdownComponent(
                 val dp = it.width.toFloat() / screenPixelsDensity
                 width.value = dp
             }
-            .background(Default, shape = MaterialTheme.shapes.small)
-            .border(width = 1.dp, color = Secondary, shape = MaterialTheme.shapes.small),
+            .background(MaterialTheme.colorScheme.background, shape = MaterialTheme.shapes.small)
+            .border(width = 1.dp, color = MaterialTheme.colorScheme.secondary, shape = MaterialTheme.shapes.small),
     ) {
         Text(
-            modifier = Modifier
-                .padding(start = 16.dp)
-                .wrapContentHeight()
-                .weight(weight = 1f, fill = true)
+            modifier = Modifier.padding(start = 16.dp).wrapContentHeight().weight(weight = 1f, fill = true)
                 .align(Alignment.CenterVertically),
             text = uiState.showedBaseCurrency,
             maxLines = 1,
-            style = MaterialTheme.typography.subtitle2,
+            style = MaterialTheme.typography.titleMedium,
         )
         IconButton(
             modifier = Modifier.align(Alignment.CenterVertically),
-            onClick = { expanded.value = !expanded.value }) {
-            if (expanded.value) {
-                Icon(
-                    modifier = Modifier.size(24.dp),
-                    painter = painterResource(R.drawable.ic_arrow_up_24),
-                    contentDescription = null,
-                    tint = Primary,
-                )
-            } else {
-                Icon(
-                    modifier = Modifier.size(24.dp),
-                    painter = painterResource(R.drawable.ic_arrow_down_24),
-                    contentDescription = null,
-                    tint = Primary,
-                )
-            }
+            onClick = { expanded.value = !expanded.value }
+        ) {
+            Icon(
+                modifier = Modifier.size(24.dp),
+                painter = painterResource(iconId),
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+            )
         }
 
         DropdownMenu(
@@ -204,20 +201,23 @@ private fun CurrencyDropdownComponent(
                             expanded.value = false
                             onEvent(CurrenciesUserEvent.OnChangeBaseCurrency(nameCurrency))
                         },
-                        contentPadding = PaddingValues(start = 16.dp, top = 0.dp, end = 0.dp, bottom = 0.dp)
-                    ) {
-                        Text(
-                            modifier = Modifier.weight(1f),
-                            text = nameCurrency,
-                            style = MaterialTheme.typography.subtitle2,
-                        )
-                        Icon(
-                            modifier = Modifier.padding(end = 16.dp).size(24.dp),
-                            painter = painterResource(R.drawable.ic_arrow_up_24),
-                            contentDescription = null,
-                            tint = Primary,
-                        )
-                    }
+                        contentPadding = PaddingValues(start = 16.dp, top = 0.dp, end = 0.dp, bottom = 0.dp),
+                        text = {
+                            Text(
+                                modifier = Modifier.weight(1f),
+                                text = nameCurrency,
+                                style = MaterialTheme.typography.titleMedium,
+                            )
+                        },
+                        trailingIcon = {
+                            Icon(
+                                modifier = Modifier.padding(end = 16.dp).size(24.dp),
+                                painter = painterResource(iconId),
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                            )
+                        },
+                    )
                 } else {
                     DropdownMenuItem(
                         modifier = Modifier.height(56.dp),
@@ -225,10 +225,9 @@ private fun CurrencyDropdownComponent(
                             expanded.value = false
                             onEvent(CurrenciesUserEvent.OnChangeBaseCurrency(nameCurrency))
                         },
-                        contentPadding = PaddingValues(start = 16.dp, top = 0.dp, end = 0.dp, bottom = 0.dp)
-                    ) {
-                        Text(text = nameCurrency, style = MaterialTheme.typography.subtitle2)
-                    }
+                        contentPadding = PaddingValues(start = 16.dp, top = 0.dp, end = 0.dp, bottom = 0.dp),
+                        text = { Text(text = nameCurrency, style = MaterialTheme.typography.titleMedium) },
+                    )
                 }
             }
         }
@@ -259,6 +258,12 @@ private fun SheetContent(
     onEvent: (CurrenciesUserEvent) -> Unit,
 ) {
     ScreenColumnComponent {
+        Box(
+            modifier = Modifier
+                .windowInsetsTopHeight(WindowInsets.systemBars)
+                .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.surface)
+        )
 
         ToolbarComponent(
             title = R.string.title_filters,
@@ -280,6 +285,8 @@ private fun SheetContent(
             text = R.string.action_apply,
             onClick = { onEvent(CurrenciesUserEvent.OnApplyFilters) },
         )
+
+        Spacer(modifier = Modifier.windowInsetsTopHeight(WindowInsets.systemBars))
     }
 }
 
@@ -295,9 +302,9 @@ private fun SortingSection(
         Text(
             modifier = Modifier.wrapContentSize().align(Alignment.TopStart),
             text = stringResource(R.string.header_sort_by),
-            style = MaterialTheme.typography.h2,
+            style = MaterialTheme.typography.labelMedium,
         )
-
+//todo: optimize
         Column(modifier = Modifier.padding(top = 32.dp).selectableGroup()) {
             SortingSelectComponent(
                 selected = uiState.sorting == Sorting.CodeAZ,
@@ -340,39 +347,39 @@ private fun SortingSelectComponent(
         Text(
             modifier = Modifier.wrapContentHeight().weight(weight = 1f, fill = true).align(Alignment.CenterVertically),
             text = stringResource(text),
-            style = MaterialTheme.typography.body1,
+            style = MaterialTheme.typography.titleMedium,
         )
         RadioButton(
             selected = selected,
-            onClick = {},
-            colors = RadioButtonDefaults.colors(selectedColor = Primary, unselectedColor = Secondary),
+            onClick = onClick,
+            colors = RadioButtonDefaults.colors(
+                selectedColor = MaterialTheme.colorScheme.primary,
+                unselectedColor = MaterialTheme.colorScheme.secondary
+            ),
         )
     }
 }
 
 
+//todo: bug preview - 2 status bars, bar must color
 @Preview(showSystemUi = true)
 @Composable
 private fun ScreenPreview() {
+    val listStub = mutableListOf<ActualCurrencyRateUi>()
+    for (index in 1L..5) {
+        val item = ActualCurrencyRateUi(
+            id = index,
+            text = "TGR",
+            quotation = "3.932455",
+            isFavorite = false,
+        )
+        listStub.add(item)
+    }
+
     CurrencyRateTrackingTheme {
-        // A surface container using the 'background' color from the theme
-//        Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background) {
-
-        val listStub = mutableListOf<ActualCurrencyRateUi>()
-        for (index in 1L..5) {
-            val item = ActualCurrencyRateUi(
-                id = index,
-                text = "TGR",
-                quotation = "3.932455",
-                isFavorite = false,
-            )
-            listStub.add(item)
-        }
-
         Content(
             uiState = CurrenciesUiState(listActualCurrencyRates = listStub, isFiltersLifecycle = true),
             onEvent = {}
         )
-//        }
     }
 }

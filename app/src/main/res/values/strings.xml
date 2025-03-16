@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">Currency Rate Tracking</string>
 
-    <string name="title_currencies">Currencies</string>
     <string name="title_favorites">Favorites</string>
+
+    <string name="action_currencies">Currencies</string>
+    <string name="action_favorites">Favorites</string>
 </resources>

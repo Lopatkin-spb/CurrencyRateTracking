@@ -78,7 +78,7 @@ dependencies {
     val composeBom = platform("androidx.compose:compose-bom:2024.06.00")
     implementation(composeBom)
     implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.material:material")
+    implementation("androidx.compose.material3:material3")
     androidTestImplementation(composeBom)
     // Preview support
     implementation("androidx.compose.ui:ui-tooling-preview")

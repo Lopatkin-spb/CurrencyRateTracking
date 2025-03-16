@@ -8,7 +8,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,7 +20,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import com.example.currencyratetracking.model.CurrencyUi
-import com.example.currencyratetracking.ui_theme.*
 import com.example.currencyratetracking.ui_theme.R
 import kotlinx.coroutines.launch
 
@@ -75,12 +74,15 @@ private fun OnLifecycleComposable(
 
 
 @Composable
-fun ScreenComponent(
+fun ScreenBoxComponent(
     modifier: Modifier = Modifier,
     content: @Composable BoxScope.() -> Unit
 ) {
-    Box(modifier = modifier.fillMaxSize()) {
-        content()
+    Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+
+        Box(modifier = Modifier.fillMaxSize()) {
+            content()
+        }
     }
 }
 
@@ -109,10 +111,7 @@ fun ToolbarComponent(
 
     Column(modifier = modifier.wrapContentSize()) {
         Box(
-            modifier = Modifier
-                .height(48.dp)
-                .fillMaxWidth()
-                .background(Header),
+            modifier = Modifier.height(48.dp).fillMaxWidth().background(MaterialTheme.colorScheme.surface),
         ) {
             if (onLeadingIcon != null && leadingIcon != null) {
                 Box(modifier = Modifier.padding(start = 4.dp).size(48.dp).clickable(onClick = onLeadingIcon)) {
@@ -120,7 +119,7 @@ fun ToolbarComponent(
                         modifier = Modifier.align(Alignment.Center),
                         painter = painterResource(leadingIcon),
                         contentDescription = null,
-                        tint = Primary,
+                        tint = MaterialTheme.colorScheme.primary,
                     )
                 }
             }
@@ -131,20 +130,20 @@ fun ToolbarComponent(
                     .width(180.dp)
                     .align(Alignment.CenterStart),
                 text = stringResource(title),
-                style = MaterialTheme.typography.h1,
+                style = MaterialTheme.typography.displayLarge,
             )
         }
+
         content()
-        Box(
-            modifier = Modifier.fillMaxWidth().height(1.dp).background(Outline),
-        )
+
+        Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(MaterialTheme.colorScheme.outline))
     }
 }
 
 
 //TODO: bug correct list must moved to under toolbar
 @Composable
-fun CurrenciesListSection(
+fun CardsListSection(
     modifier: Modifier = Modifier,
     list: List<CurrencyUi>,
     onFavoriteEvent: (CurrencyUi) -> Unit,
@@ -158,7 +157,7 @@ fun CurrenciesListSection(
             items = list,
             key = { item -> item.id },
         ) { item ->
-            CurrencyItem(
+            CardItem(
                 data = item,
                 onFavoriteEvent = onFavoriteEvent,
             )
@@ -168,7 +167,7 @@ fun CurrenciesListSection(
 
 
 @Composable
-fun CurrencyItem(
+fun CardItem(
     modifier: Modifier = Modifier,
     data: CurrencyUi,
     onFavoriteEvent: (CurrencyUi) -> Unit = {},
@@ -177,31 +176,25 @@ fun CurrencyItem(
         modifier = modifier
             .height(48.dp)
             .fillMaxWidth()
-            .background(color = Card, shape = MaterialTheme.shapes.medium)
+            .background(color = MaterialTheme.colorScheme.secondaryContainer, shape = MaterialTheme.shapes.medium)
             .padding(start = 16.dp, end = 16.dp),
     ) {
         Text(
-            modifier = Modifier
-                .wrapContentHeight()
+            modifier = Modifier.wrapContentHeight()
                 .weight(weight = 1f, fill = true)
                 .align(Alignment.CenterVertically),
             text = data.text,
             maxLines = 1,
-            style = MaterialTheme.typography.subtitle2,
+            style = MaterialTheme.typography.bodyMedium,
         )
-        Row(
-            modifier = Modifier
-                .wrapContentHeight()
-                .width(116.dp)
-                .align(Alignment.CenterVertically),
-        ) {
+
+        Row(modifier = Modifier.wrapContentHeight().width(116.dp).align(Alignment.CenterVertically)) {
             Text(
-                modifier = Modifier
-                    .wrapContentHeight()
+                modifier = Modifier.wrapContentHeight()
                     .weight(weight = 1f, fill = true)
                     .align(Alignment.CenterVertically),
                 text = data.quotation,
-                style = MaterialTheme.typography.subtitle1,
+                style = MaterialTheme.typography.bodyLarge,
             )
             IconToggleButton(
                 modifier = Modifier.size(24.dp).align(Alignment.CenterVertically),
@@ -219,18 +212,14 @@ fun CurrencyItem(
                 if (data.isFavorite) {
                     Icon(
                         painter = painterResource(R.drawable.ic_favorites_on_24),
-//                        painter = rememberVectorPainter(Icons.Filled.Place),
-
                         contentDescription = null,
-                        tint = Yellow,
+                        tint = MaterialTheme.colorScheme.tertiary,
                     )
                 } else {
                     Icon(
                         painter = painterResource(R.drawable.ic_favorites_off_24),
-//                        painter = rememberVectorPainter(Icons.Filled.Place),
-
                         contentDescription = null,
-                        tint = Secondary,
+                        tint = MaterialTheme.colorScheme.secondary,
                     )
                 }
             }
@@ -239,7 +228,8 @@ fun CurrencyItem(
 }
 
 
-@OptIn(ExperimentalMaterialApi::class)
+//todo: bug - must save open state to rotate
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ModalBottomSheetWithOutsideControl(
     sheetContent: @Composable (ColumnScope.() -> Unit),
@@ -247,16 +237,19 @@ fun ModalBottomSheetWithOutsideControl(
     onResetState: () -> Unit = {},
 ) {
     val sheetState = rememberModalBottomSheetState(
-        initialValue = ModalBottomSheetValue.Hidden,
-        skipHalfExpanded = true,
+        skipPartiallyExpanded = true,
     )
     val scope = rememberCoroutineScope()
 
-    ModalBottomSheetLayout(
+    ModalBottomSheet(
         sheetState = sheetState,
-        sheetContent = sheetContent,
-        content = {},
-    )
+        onDismissRequest = onResetState,
+        containerColor = MaterialTheme.colorScheme.background,
+        dragHandle = null,
+        shape = MaterialTheme.shapes.extraSmall,
+    ) {
+        sheetContent()
+    }
 
     // Outside management
     state?.let { isShow ->
@@ -299,12 +292,12 @@ fun ButtonWithTextComponent(
 ) {
     Button(
         modifier = modifier,
-        shape = MaterialTheme.shapes.large,
+        shape = MaterialTheme.shapes.extraLarge,
         onClick = onClick,
     ) {
         Text(
             text = stringResource(text),
-            style = MaterialTheme.typography.button,
+            style = MaterialTheme.typography.labelLarge,
         )
     }
 }
