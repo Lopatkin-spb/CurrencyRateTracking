@@ -80,7 +80,7 @@ private fun Content(
         )
 
         CardsListSection(
-            modifier = Modifier.padding(start = 16.dp, top = 133.dp, end = 16.dp),
+            modifier = Modifier.padding(start = 16.dp, top = 117.dp, end = 16.dp),
             list = uiState.listActualCurrencyRates,
             onFavoriteEvent = { data -> onEvent(CurrenciesUserEvent.OnChangeFavoriteState(data)) },
         )

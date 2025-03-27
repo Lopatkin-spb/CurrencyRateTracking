@@ -141,7 +141,6 @@ fun ToolbarComponent(
 }
 
 
-//TODO: bug correct list must moved to under toolbar
 @Composable
 fun CardsListSection(
     modifier: Modifier = Modifier,
@@ -152,6 +151,7 @@ fun CardsListSection(
     LazyColumn(
         modifier = modifier.wrapContentSize(),
         verticalArrangement = Arrangement.spacedBy(8.dp),
+        contentPadding = PaddingValues(top = 16.dp, bottom = 16.dp),
     ) {
         items(
             items = list,

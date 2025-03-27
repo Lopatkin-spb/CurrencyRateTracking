@@ -65,7 +65,7 @@ private fun Content(
         ToolbarComponent(title = R.string.title_favorites)
 
         CardsListSection(
-            modifier = Modifier.padding(start = 16.dp, top = 65.dp, end = 16.dp),
+            modifier = Modifier.padding(start = 16.dp, top = 49.dp, end = 16.dp),
             list = uiState.listFavorites,
             onFavoriteEvent = { data -> onEvent(FavoritesUserEvent.OnChangeFavoriteState(data)) },
         )
