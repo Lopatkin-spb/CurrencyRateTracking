@@ -1,12 +1,12 @@
-package com.example.currencyratetracking.api_locale.api
+package com.example.currencyratetracking.api_locale.api.rate
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 
-@Entity(tableName = TABLE_FAVORITE_CURRENCY_PAIR)
-data class FavoriteCurrencyPairDbo(
+@Entity(tableName = TABLE_CURRENCY_PAIR_RATES)
+data class CurrencyPairRateDbo(
     @PrimaryKey(autoGenerate = true) val id: Long,
     @ColumnInfo(COLUMN_CHAR_CODE_BASE) val charCodeBase: String,
     @ColumnInfo(COLUMN_CHAR_CODE_SECOND) val charCodeSecond: String,
@@ -14,7 +14,7 @@ data class FavoriteCurrencyPairDbo(
 )
 
 
-internal const val TABLE_FAVORITE_CURRENCY_PAIR = "favorite_currency_pair_table"
+internal const val TABLE_CURRENCY_PAIR_RATES = "currency_pair_rates_table"
 
 internal const val COLUMN_ID = "id"
 internal const val COLUMN_CHAR_CODE_BASE = "char_code_base"

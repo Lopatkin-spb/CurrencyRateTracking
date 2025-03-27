@@ -1,6 +1,6 @@
 package com.example.currencyratetracking.currencies.data.locale
 
-import com.example.currencyratetracking.api_locale.api.FavoriteCurrencyPairDbo
+import com.example.currencyratetracking.api_locale.api.favorite.FavoriteCurrencyPairDbo
 import com.example.currencyratetracking.model.CurrencyPair
 
 

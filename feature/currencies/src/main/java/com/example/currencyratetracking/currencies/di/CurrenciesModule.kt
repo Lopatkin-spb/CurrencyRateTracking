@@ -10,6 +10,8 @@ import com.example.currencyratetracking.currencies.data.locale.FavoriteLocaleDat
 import com.example.currencyratetracking.currencies.data.locale.dataSource.FavoriteLocaleDataSource
 import com.example.currencyratetracking.currencies.data.locale.dataSource.PersonalizationLocaleDataSource
 import com.example.currencyratetracking.currencies.data.locale.PersonalizationLocaleDataSourceImpl
+import com.example.currencyratetracking.currencies.data.locale.dataSource.RateLocaleDataSource
+import com.example.currencyratetracking.currencies.data.locale.rate.RateLocaleDataSourceImpl
 import com.example.currencyratetracking.currencies.data.remote.RateRemoteDataSourceImpl
 import com.example.currencyratetracking.currencies.data.remote.dataSource.RateRemoteDataSource
 import com.example.currencyratetracking.currencies.domain.*
@@ -93,6 +95,11 @@ internal interface InternalDataModule {
     @FragmentScope
     @Binds
     fun bindPersonalizationLocaleDataSource(impl: PersonalizationLocaleDataSourceImpl): PersonalizationLocaleDataSource
+
+    @FragmentScope
+    @Binds
+    fun bindRateLocaleDataSource(impl: RateLocaleDataSourceImpl): RateLocaleDataSource
+
 }
 
 

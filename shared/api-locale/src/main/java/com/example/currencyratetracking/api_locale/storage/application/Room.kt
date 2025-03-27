@@ -5,14 +5,19 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.example.currencyratetracking.api_locale.api.FavoriteCurrencyPairApi
-import com.example.currencyratetracking.api_locale.api.FavoriteCurrencyPairDbo
+import com.example.currencyratetracking.api_locale.api.favorite.FavoriteCurrencyPairApi
+import com.example.currencyratetracking.api_locale.api.favorite.FavoriteCurrencyPairDbo
+import com.example.currencyratetracking.api_locale.api.rate.CurrencyPairRateApi
+import com.example.currencyratetracking.api_locale.api.rate.CurrencyPairRateDbo
 import javax.inject.Inject
 
 
 interface DatabaseApiManager {
 
     fun getFavoriteCurrencyPairApi(): FavoriteCurrencyPairApi
+
+    fun getCurrencyPairRateApi(): CurrencyPairRateApi
+
 }
 
 
@@ -21,16 +26,27 @@ internal class DatabaseApiManagerImpl @Inject constructor(private val context: C
     override fun getFavoriteCurrencyPairApi(): FavoriteCurrencyPairApi {
         return AppRoomDatabase.getInstance(context).getFavoriteCurrencyPairApi()
     }
+
+    override fun getCurrencyPairRateApi(): CurrencyPairRateApi {
+        return AppRoomDatabase.getInstance(context).getCurrencyPairRateApi()
+    }
 }
 
 
 @Database(
-    version = 1,
-    entities = [FavoriteCurrencyPairDbo::class],
+    version = 2,
+    exportSchema = false,
+    entities = [
+        FavoriteCurrencyPairDbo::class,
+        CurrencyPairRateDbo::class,
+    ],
 )
 internal abstract class AppRoomDatabase : RoomDatabase() {
 
     abstract fun getFavoriteCurrencyPairApi(): FavoriteCurrencyPairApi
+
+    abstract fun getCurrencyPairRateApi(): CurrencyPairRateApi
+
 
     companion object {
         @SuppressLint("StaticFieldLeak")
@@ -48,7 +64,9 @@ internal abstract class AppRoomDatabase : RoomDatabase() {
                 context = requireNotNull(context.applicationContext),
                 klass = AppRoomDatabase::class.java,
                 name = "app_room_database.db"
-            ).build()
+            )
+                .fallbackToDestructiveMigration()
+                .build()
         }
     }
 }

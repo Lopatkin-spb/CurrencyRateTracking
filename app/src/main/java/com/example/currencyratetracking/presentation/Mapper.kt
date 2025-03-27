@@ -1,6 +1,6 @@
 package com.example.currencyratetracking.presentation
 
-import com.example.currencyratetracking.api_locale.api.FavoriteCurrencyPairDbo
+import com.example.currencyratetracking.api_locale.api.favorite.FavoriteCurrencyPairDbo
 import com.example.currencyratetracking.api_remote.api.RateDto
 import com.example.currencyratetracking.model.Currency
 import com.example.currencyratetracking.model.CurrencyInfo

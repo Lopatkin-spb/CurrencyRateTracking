@@ -13,6 +13,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -33,13 +34,19 @@ class MainActivity : AbstractActivity(), CurrenciesComponentProvider {
     @Inject
     lateinit var logger: BaseLogger
 
+    @Inject
+    lateinit var viewModelFactory: ViewModelFactory
+    private lateinit var viewModel: MainViewModel
     private lateinit var mainComponent: MainComponent
 
     override fun onCreate(savedInstanceState: Bundle?) {
         mainComponent = (applicationContext as CrtApp).getAppComponent().getMainComponent().create()
         mainComponent.inject(this)
         super.onCreate(savedInstanceState)
+
         logger.d(TAG_LOG, "$NAME_FULL started")
+        viewModel = ViewModelProvider(this, viewModelFactory).get(MainViewModel::class.java)
+
         setContent {
             CurrencyRateTrackingTheme {
                 Content()
@@ -69,6 +76,7 @@ class MainActivity : AbstractActivity(), CurrenciesComponentProvider {
 
     override fun onStop() {
         logger.v(TAG_LOG, "$NAME_FULL started")
+        viewModel.handle(MainUserEvent.OnCloseApp)
         super.onStop()
     }
 

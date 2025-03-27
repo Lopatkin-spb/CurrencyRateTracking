@@ -1,4 +1,4 @@
-package com.example.currencyratetracking.api_locale.api
+package com.example.currencyratetracking.api_locale.api.favorite
 
 import androidx.room.*
 

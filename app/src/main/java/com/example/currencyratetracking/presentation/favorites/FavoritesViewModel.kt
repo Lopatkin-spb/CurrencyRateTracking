@@ -2,7 +2,7 @@ package com.example.currencyratetracking.presentation.favorites
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.example.currencyratetracking.api_locale.api.FavoriteCurrencyPairApi
+import com.example.currencyratetracking.api_locale.api.favorite.FavoriteCurrencyPairApi
 import com.example.currencyratetracking.common_android.BaseLogger
 import com.example.currencyratetracking.core.AbstractViewModel
 import com.example.currencyratetracking.model.CurrencyUi
