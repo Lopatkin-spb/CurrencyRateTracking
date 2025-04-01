@@ -2,7 +2,7 @@ package com.example.currencyratetracking.presentation.favorites
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.example.currencyratetracking.api_locale.storage.application.DatabaseApiManager
+import com.example.currencyratetracking.api_locale.api.favorite.FavoriteCurrencyPairApi
 import com.example.currencyratetracking.common_android.BaseLogger
 import com.example.currencyratetracking.core.AbstractViewModel
 import com.example.currencyratetracking.model.CurrencyUi
@@ -15,7 +15,7 @@ import javax.inject.Inject
 
 class FavoritesViewModel @Inject constructor(
     private val logger: BaseLogger,
-    private val databaseApiManager: DatabaseApiManager,
+    private val favoriteCurrencyPairApi: FavoriteCurrencyPairApi,
 ) : AbstractViewModel() {
 
     private val _uiState = MutableLiveData(FavoritesUiState())
@@ -54,7 +54,7 @@ class FavoritesViewModel @Inject constructor(
                 launch {
                     logger.v(TAG_LOG, "$NAME_FULL started")
 
-                    val list = databaseApiManager.getFavoriteCurrencyPairApi().getAllPairs().asSequence()
+                    val list = favoriteCurrencyPairApi.getAllPairs().asSequence()
                         .map { dbo -> dbo.toCurrencyPair() }
                         .map { model -> model.toFavoriteCurrencyRate() }
                         .toList()
@@ -110,7 +110,7 @@ class FavoritesViewModel @Inject constructor(
                 launch {
                     logger.v(TAG_LOG, "$NAME_FULL started")
 
-                    if (!currency.isFavorite) databaseApiManager.getFavoriteCurrencyPairApi().deletePairBy(currency.id)
+                    if (!currency.isFavorite) favoriteCurrencyPairApi.deletePairBy(currency.id)
                     logger.v(TAG_LOG, "$NAME_FULL ended")
                     loadFavoritesList()
                 }

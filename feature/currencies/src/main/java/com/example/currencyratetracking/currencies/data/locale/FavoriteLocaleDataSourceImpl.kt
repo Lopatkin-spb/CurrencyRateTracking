@@ -1,6 +1,6 @@
 package com.example.currencyratetracking.currencies.data.locale
 
-import com.example.currencyratetracking.api_locale.storage.application.DatabaseApiManager
+import com.example.currencyratetracking.api_locale.api.favorite.FavoriteCurrencyPairApi
 import com.example.currencyratetracking.common_android.BaseLogger
 import com.example.currencyratetracking.core.AbstractDataSource
 import com.example.currencyratetracking.currencies.ModuleTag.TAG_LOG
@@ -14,7 +14,7 @@ import javax.inject.Inject
 
 internal class FavoriteLocaleDataSourceImpl @Inject constructor(
     private val logger: BaseLogger,
-    private val databaseApiManager: DatabaseApiManager,
+    private val favoriteCurrencyPairApi: FavoriteCurrencyPairApi,
 ) : FavoriteLocaleDataSource, AbstractDataSource() {
 
     override fun savePairCurrenciesToFavorite(model: CurrencyPair): Flow<Boolean> {
@@ -23,7 +23,7 @@ internal class FavoriteLocaleDataSourceImpl @Inject constructor(
             emit(model)
         }
             .map { it.toFavoriteCurrencyPairDbo() }
-            .map { dbo -> databaseApiManager.getFavoriteCurrencyPairApi().checkAndInsertUniquePair(dbo) }
+            .map { dbo -> favoriteCurrencyPairApi.checkAndInsertUniquePair(dbo) }
     }
 
     override fun deletePairCurrenciesFromFavorite(data: CurrencyPair): Flow<Boolean> {
@@ -32,7 +32,7 @@ internal class FavoriteLocaleDataSourceImpl @Inject constructor(
             emit(data)
         }
             .map { it.toFavoriteCurrencyPairDbo() }
-            .map { dbo -> databaseApiManager.getFavoriteCurrencyPairApi().deleteAll(dbo) }
+            .map { dbo -> favoriteCurrencyPairApi.deleteAll(dbo) }
     }
 
     override fun checkAvailabilityPairCurrencies(data: CurrencyPair): Flow<Boolean> {
@@ -41,6 +41,6 @@ internal class FavoriteLocaleDataSourceImpl @Inject constructor(
             emit(data)
         }
             .map { it.toFavoriteCurrencyPairDbo() }
-            .map { dbo -> databaseApiManager.getFavoriteCurrencyPairApi().checkPairBy(dbo) }
+            .map { dbo -> favoriteCurrencyPairApi.checkPairBy(dbo) }
     }
 }

@@ -14,15 +14,13 @@ public interface ApiRemoteModule
 @Module
 internal interface InternalApiRemoteModule {
 
-    @ApplicationScope
-    @Binds
-    fun bindApiRemoteManager(impl: ApiRemoteManagerImpl): ApiRemoteManager
-
-    @ApplicationScope
-    @Binds
-    fun bindConverterFactoryManager(impl: ConverterFactoryManagerImpl): ConverterFactoryManager
-
     companion object {
+
+        @ApplicationScope
+        @Provides
+        fun provideRatesApi(apiRemoteManager: ApiRemoteManager): RatesApi {
+            return apiRemoteManager.getRatesApi()
+        }
 
         /**
          * Network.
@@ -52,5 +50,13 @@ internal interface InternalApiRemoteModule {
         }
 
     }
+
+    @ApplicationScope
+    @Binds
+    fun bindApiRemoteManager(impl: ApiRemoteManagerImpl): ApiRemoteManager
+
+    @ApplicationScope
+    @Binds
+    fun bindConverterFactoryManager(impl: ConverterFactoryManagerImpl): ConverterFactoryManager
 
 }

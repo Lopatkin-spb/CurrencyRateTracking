@@ -1,6 +1,6 @@
 package com.example.currencyratetracking.currencies.data.remote
 
-import com.example.currencyratetracking.api_remote.api.ApiRemoteManager
+import com.example.currencyratetracking.api_remote.api.RatesApi
 import com.example.currencyratetracking.common_android.BaseLogger
 import com.example.currencyratetracking.core.AbstractDataSource
 import com.example.currencyratetracking.currencies.ModuleTag.TAG_LOG
@@ -12,13 +12,13 @@ import javax.inject.Inject
 
 internal class RateRemoteDataSourceImpl @Inject constructor(
     private val logger: BaseLogger,
-    private val apiRemoteManager: ApiRemoteManager,
+    private val ratesApi: RatesApi,
 ) : RateRemoteDataSource, AbstractDataSource() {
 
     override fun getActualCurrencyRates(base: String): Flow<Currency> {
         return flow {
             logger.v(TAG_LOG, "$NAME_FULL started")
-            emit(apiRemoteManager.getRatesApi().getRates(base))
+            emit(ratesApi.getRates(base))
         }
             .map { response -> response.rates?.getListRatesDto() }
             .filterNotNull()
@@ -29,7 +29,7 @@ internal class RateRemoteDataSourceImpl @Inject constructor(
     override fun getListActualCurrencyRates(base: String): Flow<List<Currency>> {
         return flow {
             logger.v(TAG_LOG, "$NAME_FULL started")
-            emit(apiRemoteManager.getRatesApi().getRates(base))
+            emit(ratesApi.getRates(base))
         }
             .map { response -> response.rates?.getListRatesDto() }
             .filterNotNull()
