@@ -21,6 +21,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.currencyratetracking.app.CrtApp
 import com.example.currencyratetracking.common_android.BaseLogger
 import com.example.currencyratetracking.core.AbstractActivity
+import com.example.currencyratetracking.core.presentation.MultiViewModelFactory
 import com.example.currencyratetracking.currencies.di.CurrenciesComponent
 import com.example.currencyratetracking.currencies.di.CurrenciesComponentProvider
 import com.example.currencyratetracking.di.app.activity.MainComponent
@@ -35,7 +36,7 @@ class MainActivity : AbstractActivity(), CurrenciesComponentProvider {
     lateinit var logger: BaseLogger
 
     @Inject
-    lateinit var viewModelFactory: ViewModelFactory
+    lateinit var viewModelFactory: MultiViewModelFactory
     private lateinit var viewModel: MainViewModel
     private lateinit var mainComponent: MainComponent
 

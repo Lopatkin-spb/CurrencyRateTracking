@@ -10,9 +10,10 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 
-internal class MainViewModel(
+class MainViewModel @Inject constructor(
     private val logger: BaseLogger,
     private val dispatcher: BaseCoroutineDispatcher,
     private val clearUserSessionByLiveCycleUseCase: ClearUserSessionByLiveCycleUseCase,

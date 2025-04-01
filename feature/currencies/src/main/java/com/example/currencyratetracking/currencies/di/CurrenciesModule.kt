@@ -1,15 +1,15 @@
 package com.example.currencyratetracking.currencies.di
 
+import androidx.lifecycle.ViewModel
 import com.example.currencyratetracking.common.FragmentScope
-import com.example.currencyratetracking.common_android.BaseLogger
-import com.example.currencyratetracking.core.BaseCoroutineDispatcher
+import com.example.currencyratetracking.core.presentation.ViewModelClassKey
 import com.example.currencyratetracking.currencies.data.FavoriteRepositoryImpl
 import com.example.currencyratetracking.currencies.data.PersonalizationRepositoryImpl
 import com.example.currencyratetracking.currencies.data.RateRepositoryImpl
 import com.example.currencyratetracking.currencies.data.locale.FavoriteLocaleDataSourceImpl
+import com.example.currencyratetracking.currencies.data.locale.PersonalizationLocaleDataSourceImpl
 import com.example.currencyratetracking.currencies.data.locale.dataSource.FavoriteLocaleDataSource
 import com.example.currencyratetracking.currencies.data.locale.dataSource.PersonalizationLocaleDataSource
-import com.example.currencyratetracking.currencies.data.locale.PersonalizationLocaleDataSourceImpl
 import com.example.currencyratetracking.currencies.data.locale.dataSource.RateLocaleDataSource
 import com.example.currencyratetracking.currencies.data.locale.rate.RateLocaleDataSourceImpl
 import com.example.currencyratetracking.currencies.data.remote.RateRemoteDataSourceImpl
@@ -19,10 +19,10 @@ import com.example.currencyratetracking.currencies.domain.repository.FavoriteRep
 import com.example.currencyratetracking.currencies.domain.repository.PersonalizationRepository
 import com.example.currencyratetracking.currencies.domain.repository.RateRepository
 import com.example.currencyratetracking.currencies.domain.usecase.*
-import com.example.currencyratetracking.currencies.presentation.ViewModelFactory
+import com.example.currencyratetracking.currencies.presentation.CurrenciesViewModel
 import dagger.Binds
 import dagger.Module
-import dagger.Provides
+import dagger.multibindings.IntoMap
 
 
 @Module(
@@ -38,34 +38,10 @@ interface CurrenciesModule
 @Module
 internal interface InternalPresentationModule {
 
-    companion object {
+    @Binds
+    @[IntoMap ViewModelClassKey(CurrenciesViewModel::class)]
+    fun bindAbstractViewModel(viewModel: CurrenciesViewModel): ViewModel
 
-        @FragmentScope
-        @Provides
-        fun provideViewModelFactory(
-            logger: BaseLogger,
-            getListBaseCurrenciesUseCase: GetListBaseCurrenciesUseCase,
-            setPairCurrenciesToFavoriteUseCase: SetPairCurrenciesToFavoriteUseCase,
-            deletePairCurrenciesFromFavoriteByCharCodesUseCase: DeletePairCurrenciesFromFavoriteByCharCodesUseCase,
-            getListActualCurrencyRatesByBaseCharCodeUseCase: GetListActualCurrencyRatesByBaseCharCodeUseCase,
-            getUserSelectedBaseCurrencyUseCase: GetUserSelectedBaseCurrencyUseCase,
-            setUserSelectedBaseCurrencyUseCase: SetUserSelectedBaseCurrencyUseCase,
-            getListActualCurrencyRatesWithSortByBaseCharCodeUseCase: GetListActualCurrencyRatesWithSortByBaseCharCodeUseCase,
-            dispatcher: BaseCoroutineDispatcher,
-        ): ViewModelFactory {
-            return ViewModelFactory(
-                logger = logger,
-                getListBaseCurrenciesUseCase = getListBaseCurrenciesUseCase,
-                dispatcher = dispatcher,
-                setPairCurrenciesToFavoriteUseCase = setPairCurrenciesToFavoriteUseCase,
-                deletePairCurrenciesFromFavoriteByCharCodesUseCase = deletePairCurrenciesFromFavoriteByCharCodesUseCase,
-                getListActualCurrencyRatesByBaseCharCodeUseCase = getListActualCurrencyRatesByBaseCharCodeUseCase,
-                setUserSelectedBaseCurrencyUseCase = setUserSelectedBaseCurrencyUseCase,
-                getUserSelectedBaseCurrencyUseCase = getUserSelectedBaseCurrencyUseCase,
-                getListActualCurrencyRatesWithSortByBaseCharCodeUseCase = getListActualCurrencyRatesWithSortByBaseCharCodeUseCase,
-            )
-        }
-    }
 }
 
 

@@ -17,6 +17,7 @@ import com.example.currencyratetracking.core.CardsListSection
 import com.example.currencyratetracking.core.OnLifecycleScreen
 import com.example.currencyratetracking.core.ScreenBoxComponent
 import com.example.currencyratetracking.core.ToolbarComponent
+import com.example.currencyratetracking.core.presentation.MultiViewModelFactory
 import com.example.currencyratetracking.presentation.*
 import com.example.currencyratetracking.ui_theme.CurrencyRateTrackingTheme
 import javax.inject.Inject
@@ -25,7 +26,7 @@ import javax.inject.Inject
 @Stable
 class FavoritesDaggerContainer {
     @Inject
-    lateinit var viewModelFactory: ViewModelFactory
+    lateinit var viewModelFactory: MultiViewModelFactory
 }
 
 @Composable

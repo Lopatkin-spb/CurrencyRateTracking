@@ -13,9 +13,10 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 
-class CurrenciesViewModel(
+class CurrenciesViewModel @Inject constructor(
     private val getListBaseCurrenciesUseCase: GetListBaseCurrenciesUseCase,
     private val setPairCurrenciesToFavoriteUseCase: SetPairCurrenciesToFavoriteUseCase,
     private val deletePairCurrenciesFromFavoriteByCharCodesUseCase: DeletePairCurrenciesFromFavoriteByCharCodesUseCase,

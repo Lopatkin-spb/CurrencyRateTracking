@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.currencyratetracking.core.*
+import com.example.currencyratetracking.core.presentation.MultiViewModelFactory
 import com.example.currencyratetracking.currencies.R
 import com.example.currencyratetracking.currencies.di.CurrenciesComponentProvider
 import com.example.currencyratetracking.model.Sorting
@@ -34,7 +35,7 @@ import javax.inject.Inject
 @Stable
 class CurrenciesDaggerContainer {
     @Inject
-    lateinit var viewModelFactory: ViewModelFactory
+    lateinit var viewModelFactory: MultiViewModelFactory
 }
 
 
