@@ -10,15 +10,18 @@ import com.example.currencyratetracking.data.locale.LocaleDataSourceImpl
 import com.example.currencyratetracking.domain.ClearUserSessionByLiveCycleUseCase
 import com.example.currencyratetracking.domain.repository.Repository
 import com.example.currencyratetracking.domain.usecase.ClearUserSessionByLiveCycleUseCaseImpl
+import com.example.currencyratetracking.favorites.di.FavoritesComponent
 import com.example.currencyratetracking.presentation.MainViewModel
-import com.example.currencyratetracking.presentation.favorites.FavoritesViewModel
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap
 
 
 @Module(
-    subcomponents = [CurrenciesComponent::class],
+    subcomponents = [
+        CurrenciesComponent::class,
+        FavoritesComponent::class,
+    ],
     includes = [
         InternalMainDataModule::class,
         InternalMainDomainModule::class,
@@ -29,11 +32,6 @@ interface MainModule {
     @Binds
     @[IntoMap ViewModelClassKey(MainViewModel::class)]
     fun bindMainViewModel(impl: MainViewModel): ViewModel
-
-    @Binds
-    @[IntoMap ViewModelClassKey(FavoritesViewModel::class)]
-    fun bindFavoritesViewModel(impl: FavoritesViewModel): ViewModel
-
 }
 
 

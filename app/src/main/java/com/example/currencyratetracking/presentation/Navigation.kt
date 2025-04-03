@@ -7,7 +7,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.currencyratetracking.currencies.presentation.CurrenciesScreen
-import com.example.currencyratetracking.presentation.favorites.FavoritesScreen
+import com.example.currencyratetracking.favorites.presentation.FavoritesScreen
 
 
 @Composable

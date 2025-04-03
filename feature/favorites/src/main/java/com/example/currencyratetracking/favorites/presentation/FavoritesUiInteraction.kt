@@ -1,15 +1,14 @@
-package com.example.currencyratetracking.presentation.favorites
+package com.example.currencyratetracking.favorites.presentation
 
 import com.example.currencyratetracking.model.CurrencyUi
 
 
 data class FavoritesUiState(
-    val listFavorites: List<FavoriteCurrencyRate> = emptyList(),
+    val listFavorites: List<FavoritePairCurrenciesRateUi> = emptyList(),
 )
 
 
-//TODO: correct names all
-data class FavoriteCurrencyRate(
+data class FavoritePairCurrenciesRateUi(
     override val id: Long,
     override val text: String,
     override val quotation: String,

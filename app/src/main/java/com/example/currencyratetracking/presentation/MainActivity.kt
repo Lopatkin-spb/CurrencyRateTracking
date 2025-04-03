@@ -25,12 +25,14 @@ import com.example.currencyratetracking.core.presentation.MultiViewModelFactory
 import com.example.currencyratetracking.currencies.di.CurrenciesComponent
 import com.example.currencyratetracking.currencies.di.CurrenciesComponentProvider
 import com.example.currencyratetracking.di.app.activity.MainComponent
+import com.example.currencyratetracking.favorites.di.FavoritesComponent
+import com.example.currencyratetracking.favorites.di.FavoritesComponentProvider
 import com.example.currencyratetracking.presentation.ModuleTag.TAG_LOG
 import com.example.currencyratetracking.ui_theme.CurrencyRateTrackingTheme
 import javax.inject.Inject
 
 
-class MainActivity : AbstractActivity(), CurrenciesComponentProvider {
+class MainActivity : AbstractActivity(), CurrenciesComponentProvider, FavoritesComponentProvider {
 
     @Inject
     lateinit var logger: BaseLogger
@@ -90,6 +92,10 @@ class MainActivity : AbstractActivity(), CurrenciesComponentProvider {
 
     override fun provideCurrenciesComponent(): CurrenciesComponent {
         return getMainComponent().currenciesComponent().create()
+    }
+
+    override fun provideFavoritesComponent(): FavoritesComponent {
+        return getMainComponent().favoritesComponent().create()
     }
 
 }

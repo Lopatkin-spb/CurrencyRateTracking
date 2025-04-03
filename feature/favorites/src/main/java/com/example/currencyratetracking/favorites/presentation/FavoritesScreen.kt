@@ -1,4 +1,4 @@
-package com.example.currencyratetracking.presentation.favorites
+package com.example.currencyratetracking.favorites.presentation
 
 import android.content.Context
 import androidx.compose.foundation.layout.padding
@@ -12,13 +12,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.currencyratetracking.R
 import com.example.currencyratetracking.core.CardsListSection
 import com.example.currencyratetracking.core.OnLifecycleScreen
 import com.example.currencyratetracking.core.ScreenBoxComponent
 import com.example.currencyratetracking.core.ToolbarComponent
 import com.example.currencyratetracking.core.presentation.MultiViewModelFactory
-import com.example.currencyratetracking.presentation.*
+import com.example.currencyratetracking.favorites.R
+import com.example.currencyratetracking.favorites.di.FavoritesComponentProvider
 import com.example.currencyratetracking.ui_theme.CurrencyRateTrackingTheme
 import javax.inject.Inject
 
@@ -30,11 +30,11 @@ class FavoritesDaggerContainer {
 }
 
 @Composable
-internal fun FavoritesScreen(
+fun FavoritesScreen(
     context: Context = LocalContext.current,
     container: FavoritesDaggerContainer = remember {
         FavoritesDaggerContainer().also { container ->
-            (context as MainActivity).getMainComponent().inject(container)
+            (context as FavoritesComponentProvider).provideFavoritesComponent().inject(container)
         }
     },
     viewModel: FavoritesViewModel = viewModel(factory = container.viewModelFactory),
@@ -77,9 +77,9 @@ private fun Content(
 @Preview(showSystemUi = true)
 @Composable
 private fun ScreenPreview() {
-    val listStub = mutableListOf<FavoriteCurrencyRate>()
+    val listStub = mutableListOf<FavoritePairCurrenciesRateUi>()
     for (index in 1L..5) {
-        val item = FavoriteCurrencyRate(
+        val item = FavoritePairCurrenciesRateUi(
             id = index,
             text = "SDDF/JHY",
             quotation = "3.932455",

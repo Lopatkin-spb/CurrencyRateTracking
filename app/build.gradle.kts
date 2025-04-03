@@ -64,6 +64,7 @@ dependencies {
     implementation(project(":shared:common"))
     implementation(project(":shared:api-locale"))
     implementation(project(":feature:currencies"))
+    implementation(project(":feature:favorites"))
     implementation(project(":shared:ui-theme"))
 
     /**
