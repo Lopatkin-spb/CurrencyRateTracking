@@ -57,7 +57,6 @@ class CurrenciesViewModel @Inject constructor(
         logger.d(TAG_LOG, "$NAME_FULL started")
 
         loadListBaseCurrencies()
-        loadBaseCurrency()
     }
 
 
@@ -66,7 +65,14 @@ class CurrenciesViewModel @Inject constructor(
             is CurrenciesUserEvent.OnScreenOpen -> {
                 logger.i(TAG_LOG, "$NAME_FULL OnScreenOpen")
                 _uiState.value?.let { state ->
-                    loadListActualCurrencyRatesWithSort(state.showedBaseCurrency, state.sorting)
+
+                    if (state.showedBaseCurrency.isEmpty()) {
+                        loadBaseCurrency()
+                    } else if (state.isSortingEnabled) {
+                        loadListActualCurrencyRatesWithSort(state.showedBaseCurrency, state.sorting)
+                    } else {
+                        loadListActualCurrencyRates(state.showedBaseCurrency)
+                    }
                 }
             }
 
@@ -144,9 +150,14 @@ class CurrenciesViewModel @Inject constructor(
                 .onEach { result ->
                     if (result) _uiState.value = _uiState.value?.copy(showedBaseCurrency = currency)
                     logger.v(TAG_LOG, "$NAME_FULL success")
-                    if (result && _uiState.value?.isSortingEnabled == false) loadListActualCurrencyRates(currency)
-                    if (result && _uiState.value?.isSortingEnabled == true)
-                        loadListActualCurrencyRatesWithSort(currency, _uiState.value?.sorting)
+
+                    _uiState.value?.let { state ->
+                        if (result && state.isSortingEnabled) {
+                            loadListActualCurrencyRatesWithSort(currency, state.sorting)
+                        } else if (!state.isSortingEnabled && result) {
+                            loadListActualCurrencyRates(currency)
+                        }
+                    }
                 }
                 .catchCancellation { logger.v(TAG_LOG, "$NAME_FULL cancel") }
                 .catchException { logger.w(TAG_LOG, "$NAME_FULL ${it.message}", it) }
@@ -272,7 +283,6 @@ class CurrenciesViewModel @Inject constructor(
     }
 
 
-    //TODO: if on Favorite screen deleted, then this not deleted
     private fun deletePairFromFavorite(currency: CurrencyUi) {
         viewModelScope.launch(dispatcher.main() + exceptionHandler + CoroutineName(DELETE_PAIR_FROM_FAVORITE_KEY)) {
             deletePairCurrenciesFromFavoriteByCharCodesUseCase.execute(
