@@ -12,7 +12,7 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-rootProject.name = "Currency Rate Tracking"
+rootProject.name = "CurrencyRateTracking"
 /**
  * Modules
  */
