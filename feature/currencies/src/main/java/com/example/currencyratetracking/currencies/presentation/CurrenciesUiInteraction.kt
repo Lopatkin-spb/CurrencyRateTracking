@@ -8,8 +8,12 @@ data class CurrenciesUiState(
     val showedBaseCurrency: String = "",
     val listBaseCurrencies: List<String> = emptyList(),
     val listActualCurrencyRates: List<ActualCurrencyRateUi> = emptyList(),
+
+    //todo: rename to isFiltersOpen
     val isFiltersLifecycle: Boolean? = null,
     val sorting: Sorting = Sorting.CodeAZ,
+
+    //todo: rename to isSortingApply
     val isSortingEnabled: Boolean = false,
 )
 

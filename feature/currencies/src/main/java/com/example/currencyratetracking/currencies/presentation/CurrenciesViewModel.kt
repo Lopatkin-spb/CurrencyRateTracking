@@ -65,6 +65,9 @@ class CurrenciesViewModel @Inject constructor(
         when (new) {
             is CurrenciesUserEvent.OnScreenOpen -> {
                 logger.i(TAG_LOG, "$NAME_FULL OnScreenOpen")
+                _uiState.value?.let { state ->
+                    loadListActualCurrencyRatesWithSort(state.showedBaseCurrency, state.sorting)
+                }
             }
 
             is CurrenciesUserEvent.OnScreenClose -> {
