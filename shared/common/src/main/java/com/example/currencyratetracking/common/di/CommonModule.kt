@@ -1,7 +1,7 @@
 package com.example.currencyratetracking.common.di
 
-import com.example.currencyratetracking.common.ApplicationScope
-import com.example.currencyratetracking.common.SerializationManager
+import com.example.currencyratetracking.common.*
+import com.example.currencyratetracking.common.DoubleRoundingConverterImpl
 import com.example.currencyratetracking.common.SerializationManagerImpl
 import dagger.Binds
 import dagger.Module
@@ -17,4 +17,8 @@ internal interface InternalCommonModule {
     @ApplicationScope
     @Binds
     fun bindSerializationManager(impl: SerializationManagerImpl): SerializationManager
+
+    @ApplicationScope
+    @Binds
+    fun bindDoubleRoundingConverter(impl: DoubleRoundingConverterImpl): DoubleRoundingConverter
 }

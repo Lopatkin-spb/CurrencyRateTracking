@@ -1,5 +1,6 @@
 package com.example.currencyratetracking.currencies.domain.usecase
 
+import com.example.currencyratetracking.common.DoubleRoundingConverter
 import com.example.currencyratetracking.common_android.BaseLogger
 import com.example.currencyratetracking.core.transformToList
 import com.example.currencyratetracking.currencies.domain.GetListActualCurrencyRatesWithSortByBaseCharCodeUseCase
@@ -16,6 +17,7 @@ internal class GetListActualCurrencyRatesWithSortByBaseCharCodeUseCaseImpl @Inje
     private val rateRepository: RateRepository,
     private val favoriteRepository: FavoriteRepository,
     private val logger: BaseLogger,
+    private val doubleRoundingConverter: DoubleRoundingConverter,
 ) : GetListActualCurrencyRatesWithSortByBaseCharCodeUseCase {
 
     override fun execute(base: String, sorting: Sorting?): Flow<CurrencyActual> {
@@ -23,10 +25,8 @@ internal class GetListActualCurrencyRatesWithSortByBaseCharCodeUseCaseImpl @Inje
             .filterNot { model -> model.quotation == 0.0 }
             .filterNot { model -> model.charCode.name == base }
             .map { model ->
-                //TODO: maybe round
-                val quotationSix = String.format("%.6f", model.quotation)
-
-                model.copy(quotation = quotationSix.toDouble())
+                val rounded = doubleRoundingConverter.round(value = model.quotation, scale = 6)
+                model.copy(quotation = rounded)
             }
             .map { model -> model.toCurrencyPair(base) }
             .flatMapConcat { model -> favoriteRepository.syncPairCurrencies(model) }
