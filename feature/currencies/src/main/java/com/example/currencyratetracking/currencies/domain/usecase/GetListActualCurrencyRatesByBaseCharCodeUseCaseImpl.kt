@@ -26,9 +26,10 @@ internal class GetListActualCurrencyRatesByBaseCharCodeUseCaseImpl @Inject const
             .filterNot { model -> model.quotation == 0.0 }
             .filterNot { model -> model.charCode.name == base }
             .map { model ->
-                val rounded = doubleRoundingConverter.round(value = model.quotation, scale = 6)
+                val rounded = doubleRoundingConverter.roundOrNull(value = model.quotation, max = 6) ?: 0.0
                 model.copy(quotation = rounded)
             }
+            .filterNot { model -> model.quotation == 0.0 }
             .map { model -> model.toCurrencyPair(base) }
             .flatMapConcat { model -> favoriteReposotory.syncPairCurrencies(model) }
     }

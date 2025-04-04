@@ -6,6 +6,7 @@ import com.example.currencyratetracking.favorites.domain.repository.FavoriteRepo
 import com.example.currencyratetracking.favorites.domain.repository.RateRepository
 import com.example.currencyratetracking.model.CurrencyPair
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -21,7 +22,7 @@ internal class GetListFavoritePairsUseCaseImpl @Inject constructor(
         return favoriteRepository.getFavoritePairs()
             .flatMapConcat { pair -> rateRepository.getActualCurrencyPair(pair) }
             .map { model ->
-                val rounded = doubleRoundingConverter.round(value = model.quotation, scale = 6)
+                val rounded = doubleRoundingConverter.roundOrNull(value = model.quotation, max = 6) ?: 0.0
                 model.copy(quotation = rounded)
             }
     }
