@@ -2,30 +2,39 @@ package com.example.currencyratetracking.favorites.presentation
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.example.currencyratetracking.common_android.BaseLogger
 import com.example.currencyratetracking.core.*
+import com.example.currencyratetracking.core.presentation.ViewModelAssistedSavedStateFactory
 import com.example.currencyratetracking.favorites.ModuleTag.TAG_LOG
 import com.example.currencyratetracking.favorites.domain.DeletePairCurrenciesFromFavoriteByCharCodesUseCase
 import com.example.currencyratetracking.favorites.domain.GetListFavoritePairsUseCase
 import com.example.currencyratetracking.favorites.domain.SetPairCurrenciesToFavoriteUseCase
 import com.example.currencyratetracking.model.CurrencyUi
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 
-class FavoritesViewModel @Inject constructor(
+class FavoritesViewModel @AssistedInject constructor(
     private val logger: BaseLogger,
     private val dispatcher: BaseCoroutineDispatcher,
     private val getListFavoritePairsUseCase: GetListFavoritePairsUseCase,
     private val setPairCurrenciesToFavoriteUseCase: SetPairCurrenciesToFavoriteUseCase,
     private val deletePairCurrenciesFromFavoriteByCharCodesUseCase: DeletePairCurrenciesFromFavoriteByCharCodesUseCase,
+    @Assisted private val savedStateHandle: SavedStateHandle,
 ) : AbstractViewModel() {
 
+    @AssistedFactory
+    interface Factory : ViewModelAssistedSavedStateFactory<FavoritesViewModel>
+
     companion object {
+        //todo: rename
         private const val LOAD_LIST_FAVORITE_PAIRS_KEY: String =
             "com.example.currencyratetracking.favorites.presentation.LOAD_LIST_FAVORITE_PAIRS_KEY"
         private const val DELETE_PAIR_FROM_FAVORITE_KEY: String =
@@ -43,6 +52,7 @@ class FavoritesViewModel @Inject constructor(
     init {
         logger.d(TAG_LOG, "$NAME_FULL started")
 
+        //todo: remove
         loadFavoritesList()
     }
 

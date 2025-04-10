@@ -13,7 +13,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -21,7 +20,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.currencyratetracking.app.CrtApp
 import com.example.currencyratetracking.common_android.BaseLogger
 import com.example.currencyratetracking.core.AbstractActivity
-import com.example.currencyratetracking.core.presentation.MultiViewModelFactory
+import com.example.currencyratetracking.core.presentation.lazyDaggerAssistedViewModel
 import com.example.currencyratetracking.currencies.di.CurrenciesComponent
 import com.example.currencyratetracking.currencies.di.CurrenciesComponentProvider
 import com.example.currencyratetracking.di.app.activity.MainComponent
@@ -36,11 +35,10 @@ class MainActivity : AbstractActivity(), CurrenciesComponentProvider, FavoritesC
 
     @Inject
     lateinit var logger: BaseLogger
-
-    @Inject
-    lateinit var viewModelFactory: MultiViewModelFactory
-    private lateinit var viewModel: MainViewModel
     private lateinit var mainComponent: MainComponent
+    private val viewModel: MainViewModel by lazyDaggerAssistedViewModel { stateHandle ->
+        mainComponent.getMainViewModel().create(stateHandle)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         mainComponent = (applicationContext as CrtApp).getAppComponent().getMainComponent().create()
@@ -48,7 +46,6 @@ class MainActivity : AbstractActivity(), CurrenciesComponentProvider, FavoritesC
         super.onCreate(savedInstanceState)
 
         logger.d(TAG_LOG, "$NAME_FULL started")
-        viewModel = ViewModelProvider(this, viewModelFactory).get(MainViewModel::class.java)
 
         setContent {
             CurrencyRateTrackingTheme {

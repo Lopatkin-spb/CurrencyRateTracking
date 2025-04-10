@@ -2,21 +2,25 @@ package com.example.currencyratetracking.currencies.presentation
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.example.currencyratetracking.common_android.BaseLogger
 import com.example.currencyratetracking.core.*
+import com.example.currencyratetracking.core.presentation.ViewModelAssistedSavedStateFactory
 import com.example.currencyratetracking.currencies.ModuleTag.TAG_LOG
 import com.example.currencyratetracking.currencies.domain.*
 import com.example.currencyratetracking.model.CurrencyUi
 import com.example.currencyratetracking.model.Sorting
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 
-class CurrenciesViewModel @Inject constructor(
+class CurrenciesViewModel @AssistedInject constructor(
     private val getListBaseCurrenciesUseCase: GetListBaseCurrenciesUseCase,
     private val setPairCurrenciesToFavoriteUseCase: SetPairCurrenciesToFavoriteUseCase,
     private val deletePairCurrenciesFromFavoriteByCharCodesUseCase: DeletePairCurrenciesFromFavoriteByCharCodesUseCase,
@@ -26,8 +30,13 @@ class CurrenciesViewModel @Inject constructor(
     private val getListActualCurrencyRatesWithSortByBaseCharCodeUseCase: GetListActualCurrencyRatesWithSortByBaseCharCodeUseCase,
     private val dispatcher: BaseCoroutineDispatcher,
     private val logger: BaseLogger,
+    @Assisted private val savedStateHandle: SavedStateHandle,
 ) : AbstractViewModel() {
 
+    @AssistedFactory
+    interface Factory : ViewModelAssistedSavedStateFactory<CurrenciesViewModel>
+
+    //todo: renames to NAME_...
     companion object {
         private const val LOAD_LIST_BASE_CURRENCIES_KEY: String =
             "com.example.currencyratetracking.currencies.presentation.LOAD_LIST_BASE_CURRENCIES_KEY"
@@ -56,6 +65,7 @@ class CurrenciesViewModel @Inject constructor(
     init {
         logger.d(TAG_LOG, "$NAME_FULL started")
 
+        //todo: remove from this
         loadListBaseCurrencies()
     }
 
@@ -64,6 +74,8 @@ class CurrenciesViewModel @Inject constructor(
         when (new) {
             is CurrenciesUserEvent.OnScreenOpen -> {
                 logger.i(TAG_LOG, "$NAME_FULL OnScreenOpen")
+
+                //todo: separate to new function
                 _uiState.value?.let { state ->
 
                     if (state.showedBaseCurrency.isEmpty()) {

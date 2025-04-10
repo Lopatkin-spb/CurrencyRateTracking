@@ -1,8 +1,6 @@
 package com.example.currencyratetracking.favorites.di
 
-import androidx.lifecycle.ViewModel
 import com.example.currencyratetracking.common.FragmentScope
-import com.example.currencyratetracking.core.presentation.ViewModelClassKey
 import com.example.currencyratetracking.favorites.data.FavoriteRepositoryImpl
 import com.example.currencyratetracking.favorites.data.RateRepositoryImpl
 import com.example.currencyratetracking.favorites.data.locale.FavoriteLocaleDataSource
@@ -17,31 +15,18 @@ import com.example.currencyratetracking.favorites.domain.repository.RateReposito
 import com.example.currencyratetracking.favorites.domain.usecase.DeletePairCurrenciesFromFavoriteByCharCodesUseCaseImpl
 import com.example.currencyratetracking.favorites.domain.usecase.GetListFavoritePairsUseCaseImpl
 import com.example.currencyratetracking.favorites.domain.usecase.SetPairCurrenciesToFavoriteUseCaseImpl
-import com.example.currencyratetracking.favorites.presentation.FavoritesViewModel
 import dagger.Binds
 import dagger.Module
-import dagger.multibindings.IntoMap
 
 
 @Module(
     includes = [
-        InternalPresentationModule::class,
         InternalDataModule::class,
         InternalDomainModule::class,
     ]
 )
 interface FavoritesModule
-
-
-@Module
-internal interface InternalPresentationModule {
-
-    @Binds
-    @[IntoMap ViewModelClassKey(FavoritesViewModel::class)]
-    fun bindFavoritesViewModel(impl: FavoritesViewModel): ViewModel
-
-}
-
+//todo: set internal
 
 @Module
 internal interface InternalDomainModule {

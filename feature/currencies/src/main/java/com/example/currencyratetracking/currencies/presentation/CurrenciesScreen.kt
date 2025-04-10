@@ -9,8 +9,11 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
@@ -20,34 +23,22 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.currencyratetracking.core.*
-import com.example.currencyratetracking.core.presentation.MultiViewModelFactory
+import com.example.currencyratetracking.core.presentation.daggerAssistedViewModel
 import com.example.currencyratetracking.currencies.R
 import com.example.currencyratetracking.currencies.di.CurrenciesComponentProvider
 import com.example.currencyratetracking.model.Sorting
 import com.example.currencyratetracking.ui_theme.CurrencyRateTrackingTheme
 import com.example.currencyratetracking.ui_theme.Default
 import com.example.currencyratetracking.ui_theme.Secondary
-import javax.inject.Inject
-
-
-@Stable
-class CurrenciesDaggerContainer {
-    @Inject
-    lateinit var viewModelFactory: MultiViewModelFactory
-}
 
 
 @Composable
 fun CurrenciesScreen(
     context: Context = LocalContext.current,
-    container: CurrenciesDaggerContainer = remember {
-        CurrenciesDaggerContainer().also { container ->
-            (context as CurrenciesComponentProvider).provideCurrenciesComponent().inject(container)
-        }
+    viewModel: CurrenciesViewModel = daggerAssistedViewModel { stateHandle ->
+        (context as CurrenciesComponentProvider).provideCurrenciesComponent().getViewModel().create(stateHandle)
     },
-    viewModel: CurrenciesViewModel = viewModel(factory = container.viewModelFactory),
 ) {
     val uiState by viewModel.uiState.observeAsState()
 

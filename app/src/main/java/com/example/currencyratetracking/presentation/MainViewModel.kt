@@ -1,24 +1,33 @@
 package com.example.currencyratetracking.presentation
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.example.currencyratetracking.common_android.BaseLogger
 import com.example.currencyratetracking.core.AbstractViewModel
 import com.example.currencyratetracking.core.BaseCoroutineDispatcher
+import com.example.currencyratetracking.core.presentation.ViewModelAssistedSavedStateFactory
 import com.example.currencyratetracking.domain.ClearUserSessionByLiveCycleUseCase
 import com.example.currencyratetracking.presentation.ModuleTag.TAG_LOG
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 
-class MainViewModel @Inject constructor(
+class MainViewModel @AssistedInject constructor(
     private val logger: BaseLogger,
     private val dispatcher: BaseCoroutineDispatcher,
     private val clearUserSessionByLiveCycleUseCase: ClearUserSessionByLiveCycleUseCase,
+    @Assisted private val savedStateHandle: SavedStateHandle,
 ) : AbstractViewModel() {
 
+    @AssistedFactory
+    interface Factory : ViewModelAssistedSavedStateFactory<MainViewModel>
+
+    //todo: rename
     companion object {
         private const val CLEAR_USER_SESSION_KEY: String =
             "com.example.currencyratetracking.presentation.CLEAR_USER_SESSION_KEY"

@@ -3,41 +3,28 @@ package com.example.currencyratetracking.favorites.presentation
 import android.content.Context
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.currencyratetracking.core.CardsListSection
 import com.example.currencyratetracking.core.OnLifecycleScreen
 import com.example.currencyratetracking.core.ScreenBoxComponent
 import com.example.currencyratetracking.core.ToolbarComponent
-import com.example.currencyratetracking.core.presentation.MultiViewModelFactory
+import com.example.currencyratetracking.core.presentation.daggerAssistedViewModel
 import com.example.currencyratetracking.favorites.R
 import com.example.currencyratetracking.favorites.di.FavoritesComponentProvider
 import com.example.currencyratetracking.ui_theme.CurrencyRateTrackingTheme
-import javax.inject.Inject
 
-
-@Stable
-class FavoritesDaggerContainer {
-    @Inject
-    lateinit var viewModelFactory: MultiViewModelFactory
-}
 
 @Composable
 fun FavoritesScreen(
     context: Context = LocalContext.current,
-    container: FavoritesDaggerContainer = remember {
-        FavoritesDaggerContainer().also { container ->
-            (context as FavoritesComponentProvider).provideFavoritesComponent().inject(container)
-        }
+    viewModel: FavoritesViewModel = daggerAssistedViewModel { stateHandle ->
+        (context as FavoritesComponentProvider).provideFavoritesComponent().getFavoritesViewModel().create(stateHandle)
     },
-    viewModel: FavoritesViewModel = viewModel(factory = container.viewModelFactory),
 ) {
     val uiState by viewModel.uiState.observeAsState()
 

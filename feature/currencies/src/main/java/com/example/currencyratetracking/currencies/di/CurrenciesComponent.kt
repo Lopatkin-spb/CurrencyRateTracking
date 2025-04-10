@@ -1,7 +1,7 @@
 package com.example.currencyratetracking.currencies.di
 
 import com.example.currencyratetracking.common.FragmentScope
-import com.example.currencyratetracking.currencies.presentation.CurrenciesDaggerContainer
+import com.example.currencyratetracking.currencies.presentation.CurrenciesViewModel
 import dagger.Subcomponent
 
 
@@ -14,6 +14,6 @@ interface CurrenciesComponent {
         fun create(): CurrenciesComponent
     }
 
-    fun inject(container: CurrenciesDaggerContainer)
+    fun getViewModel(): CurrenciesViewModel.Factory
 
 }

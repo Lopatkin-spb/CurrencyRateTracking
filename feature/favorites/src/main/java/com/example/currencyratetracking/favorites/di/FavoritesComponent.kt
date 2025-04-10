@@ -1,7 +1,7 @@
 package com.example.currencyratetracking.favorites.di
 
 import com.example.currencyratetracking.common.FragmentScope
-import com.example.currencyratetracking.favorites.presentation.FavoritesDaggerContainer
+import com.example.currencyratetracking.favorites.presentation.FavoritesViewModel
 import dagger.Subcomponent
 
 
@@ -14,6 +14,6 @@ interface FavoritesComponent {
         fun create(): FavoritesComponent
     }
 
-    fun inject(container: FavoritesDaggerContainer)
+    fun getFavoritesViewModel(): FavoritesViewModel.Factory
 
 }

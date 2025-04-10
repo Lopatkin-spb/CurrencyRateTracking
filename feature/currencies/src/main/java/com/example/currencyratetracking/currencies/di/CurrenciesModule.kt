@@ -1,8 +1,6 @@
 package com.example.currencyratetracking.currencies.di
 
-import androidx.lifecycle.ViewModel
 import com.example.currencyratetracking.common.FragmentScope
-import com.example.currencyratetracking.core.presentation.ViewModelClassKey
 import com.example.currencyratetracking.currencies.data.FavoriteRepositoryImpl
 import com.example.currencyratetracking.currencies.data.PersonalizationRepositoryImpl
 import com.example.currencyratetracking.currencies.data.RateRepositoryImpl
@@ -19,31 +17,18 @@ import com.example.currencyratetracking.currencies.domain.repository.FavoriteRep
 import com.example.currencyratetracking.currencies.domain.repository.PersonalizationRepository
 import com.example.currencyratetracking.currencies.domain.repository.RateRepository
 import com.example.currencyratetracking.currencies.domain.usecase.*
-import com.example.currencyratetracking.currencies.presentation.CurrenciesViewModel
 import dagger.Binds
 import dagger.Module
-import dagger.multibindings.IntoMap
 
 
 @Module(
     includes = [
-        InternalPresentationModule::class,
         InternalDataModule::class,
         InternalDomainModule::class,
     ]
 )
 interface CurrenciesModule
-
-
-@Module
-internal interface InternalPresentationModule {
-
-    @Binds
-    @[IntoMap ViewModelClassKey(CurrenciesViewModel::class)]
-    fun bindAbstractViewModel(viewModel: CurrenciesViewModel): ViewModel
-
-}
-
+//todo: modules with subcomponent must internal
 
 @Module
 internal interface InternalDataModule {
