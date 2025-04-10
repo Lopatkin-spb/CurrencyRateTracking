@@ -19,7 +19,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.currencyratetracking.app.CrtApp
 import com.example.currencyratetracking.common_android.BaseLogger
-import com.example.currencyratetracking.core.AbstractActivity
+import com.example.currencyratetracking.core.presentation.AbstractActivity
 import com.example.currencyratetracking.core.presentation.lazyDaggerAssistedViewModel
 import com.example.currencyratetracking.currencies.di.CurrenciesComponent
 import com.example.currencyratetracking.currencies.di.CurrenciesComponentProvider

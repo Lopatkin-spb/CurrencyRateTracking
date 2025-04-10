@@ -2,7 +2,7 @@ package com.example.currencyratetracking.favorites.data.locale
 
 import com.example.currencyratetracking.api_locale.api.favorite.FavoriteCurrencyPairApi
 import com.example.currencyratetracking.common_android.BaseLogger
-import com.example.currencyratetracking.core.AbstractDataSource
+import com.example.currencyratetracking.core.data.AbstractDataSource
 import com.example.currencyratetracking.favorites.ModuleTag.TAG_LOG
 import com.example.currencyratetracking.model.CurrencyPair
 import kotlinx.coroutines.flow.*

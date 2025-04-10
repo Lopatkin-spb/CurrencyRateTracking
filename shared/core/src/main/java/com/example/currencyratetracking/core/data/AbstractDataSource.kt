@@ -1,7 +1,7 @@
-package com.example.currencyratetracking.core
+package com.example.currencyratetracking.core.data
 
 
-abstract class AbstractRepository {
+abstract class AbstractDataSource {
 
     private var depth = 2
 

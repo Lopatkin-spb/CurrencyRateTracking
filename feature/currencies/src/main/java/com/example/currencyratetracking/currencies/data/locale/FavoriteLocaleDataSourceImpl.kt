@@ -2,7 +2,7 @@ package com.example.currencyratetracking.currencies.data.locale
 
 import com.example.currencyratetracking.api_locale.api.favorite.FavoriteCurrencyPairApi
 import com.example.currencyratetracking.common_android.BaseLogger
-import com.example.currencyratetracking.core.AbstractDataSource
+import com.example.currencyratetracking.core.data.AbstractDataSource
 import com.example.currencyratetracking.currencies.ModuleTag.TAG_LOG
 import com.example.currencyratetracking.currencies.data.locale.dataSource.FavoriteLocaleDataSource
 import com.example.currencyratetracking.model.CurrencyPair

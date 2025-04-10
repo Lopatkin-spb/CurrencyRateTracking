@@ -1,7 +1,7 @@
 package com.example.currencyratetracking.data
 
 import com.example.currencyratetracking.common_android.BaseLogger
-import com.example.currencyratetracking.core.AbstractRepository
+import com.example.currencyratetracking.core.data.AbstractRepository
 import com.example.currencyratetracking.data.locale.LocaleDataSource
 import com.example.currencyratetracking.domain.repository.Repository
 import kotlinx.coroutines.flow.Flow

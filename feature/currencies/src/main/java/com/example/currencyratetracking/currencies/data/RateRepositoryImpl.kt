@@ -1,7 +1,7 @@
 package com.example.currencyratetracking.currencies.data
 
 import com.example.currencyratetracking.common_android.BaseLogger
-import com.example.currencyratetracking.core.AbstractRepository
+import com.example.currencyratetracking.core.data.AbstractRepository
 import com.example.currencyratetracking.currencies.data.locale.dataSource.RateLocaleDataSource
 import com.example.currencyratetracking.currencies.data.locale.rate.toCurrencyPair
 import com.example.currencyratetracking.currencies.data.remote.dataSource.RateRemoteDataSource

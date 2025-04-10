@@ -1,9 +1,9 @@
-package com.example.currencyratetracking.core
+package com.example.currencyratetracking.core.presentation
 
-import androidx.activity.ComponentActivity
+import androidx.lifecycle.ViewModel
 
 
-abstract class AbstractActivity : ComponentActivity() {
+abstract class AbstractViewModel : ViewModel() {
 
     private var depth = 2
 

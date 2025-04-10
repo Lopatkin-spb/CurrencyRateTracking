@@ -1,4 +1,4 @@
-package com.example.currencyratetracking.core
+package com.example.currencyratetracking.core.presentation
 
 import androidx.activity.compose.BackHandler
 import androidx.annotation.DrawableRes
@@ -12,65 +12,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.LifecycleOwner
 import com.example.currencyratetracking.model.CurrencyUi
 import com.example.currencyratetracking.ui_theme.R
 import kotlinx.coroutines.launch
-
-
-/**
- * Listener for composable screen lifecycle. Listen single event avoid recompositions.
- * For analytics, logs, and other events.
- */
-@Composable
-fun OnLifecycleScreen(
-    onStart: () -> Unit = {},
-    onStop: () -> Unit = {},
-) {
-    OnLifecycleComposable(
-        onStart = onStart,
-        onStop = onStop,
-    )
-}
-
-@Composable
-private fun OnLifecycleComposable(
-    onStart: () -> Unit,
-    onStop: () -> Unit,
-    lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
-) {
-    // Safely update the current lambdas when a new one is provided
-    val currentOnStart by rememberUpdatedState(onStart)
-    val currentOnStop by rememberUpdatedState(onStop)
-
-    // If `lifecycleOwner` changes, dispose and reset the effect
-    DisposableEffect(lifecycleOwner) {
-
-        // Create an observer that triggers our remembered callbacks
-        // for sending analytics events
-        val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_START) {
-                currentOnStart()
-            } else if (event == Lifecycle.Event.ON_STOP) {
-                currentOnStop()
-            }
-        }
-
-        // Add the observer to the lifecycle
-        lifecycleOwner.lifecycle.addObserver(observer)
-
-        // When the effect leaves the Composition, remove the observer
-        onDispose {
-            lifecycleOwner.lifecycle.removeObserver(observer)
-        }
-    }
-}
 
 
 @Composable

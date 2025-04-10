@@ -2,7 +2,7 @@ package com.example.currencyratetracking.favorites.data.remote
 
 import com.example.currencyratetracking.api_remote.api.RatesApi
 import com.example.currencyratetracking.common_android.BaseLogger
-import com.example.currencyratetracking.core.AbstractDataSource
+import com.example.currencyratetracking.core.data.AbstractDataSource
 import com.example.currencyratetracking.favorites.ModuleTag.TAG_LOG
 import com.example.currencyratetracking.model.CurrencyPair
 import kotlinx.coroutines.flow.*

@@ -9,10 +9,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.currencyratetracking.core.CardsListSection
-import com.example.currencyratetracking.core.OnLifecycleScreen
-import com.example.currencyratetracking.core.ScreenBoxComponent
-import com.example.currencyratetracking.core.ToolbarComponent
+import com.example.currencyratetracking.core.presentation.CardsListSection
+import com.example.currencyratetracking.core.presentation.OnLifecycleScreen
+import com.example.currencyratetracking.core.presentation.ScreenBoxComponent
+import com.example.currencyratetracking.core.presentation.ToolbarComponent
 import com.example.currencyratetracking.core.presentation.daggerAssistedViewModel
 import com.example.currencyratetracking.favorites.R
 import com.example.currencyratetracking.favorites.di.FavoritesComponentProvider

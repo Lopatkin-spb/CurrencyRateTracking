@@ -1,7 +1,9 @@
-package com.example.currencyratetracking.core
+package com.example.currencyratetracking.core.presentation
+
+import androidx.activity.ComponentActivity
 
 
-abstract class AbstractDataSource {
+abstract class AbstractActivity : ComponentActivity() {
 
     private var depth = 2
 

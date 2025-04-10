@@ -3,7 +3,7 @@ package com.example.currencyratetracking.presentation
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.example.currencyratetracking.common_android.BaseLogger
-import com.example.currencyratetracking.core.AbstractViewModel
+import com.example.currencyratetracking.core.presentation.AbstractViewModel
 import com.example.currencyratetracking.core.BaseCoroutineDispatcher
 import com.example.currencyratetracking.core.presentation.ViewModelAssistedSavedStateFactory
 import com.example.currencyratetracking.domain.ClearUserSessionByLiveCycleUseCase

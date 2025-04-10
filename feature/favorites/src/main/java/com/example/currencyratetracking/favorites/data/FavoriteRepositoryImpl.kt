@@ -1,7 +1,7 @@
 package com.example.currencyratetracking.favorites.data
 
 import com.example.currencyratetracking.common_android.BaseLogger
-import com.example.currencyratetracking.core.AbstractRepository
+import com.example.currencyratetracking.core.data.AbstractRepository
 import com.example.currencyratetracking.favorites.data.locale.FavoriteLocaleDataSource
 import com.example.currencyratetracking.favorites.domain.repository.FavoriteRepository
 import com.example.currencyratetracking.model.CurrencyPair
