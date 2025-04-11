@@ -16,6 +16,7 @@ import com.example.currencyratetracking.model.CurrencyUi
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import dagger.Lazy
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.flow.*
@@ -23,11 +24,11 @@ import kotlinx.coroutines.launch
 
 
 class FavoritesViewModel @AssistedInject constructor(
-    private val logger: BaseLogger,
-    private val dispatcher: BaseCoroutineDispatcher,
     private val getListFavoritePairsUseCase: GetListFavoritePairsUseCase,
-    private val setPairCurrenciesToFavoriteUseCase: SetPairCurrenciesToFavoriteUseCase,
-    private val deletePairCurrenciesFromFavoriteByCharCodesUseCase: DeletePairCurrenciesFromFavoriteByCharCodesUseCase,
+    private val dispatcher: BaseCoroutineDispatcher,
+    private val logger: BaseLogger,
+    private val setPairCurrenciesToFavoriteUseCase: Lazy<SetPairCurrenciesToFavoriteUseCase>,
+    private val deletePairCurrenciesFromFavoriteByCharCodesUseCase: Lazy<DeletePairCurrenciesFromFavoriteByCharCodesUseCase>,
     @Assisted private val savedStateHandle: SavedStateHandle,
 ) : AbstractViewModel() {
 
@@ -96,7 +97,7 @@ class FavoritesViewModel @AssistedInject constructor(
 
     private fun deletePairFromFavorite(currency: CurrencyUi) {
         viewModelScope.launch(dispatcher.main() + exceptionHandler + CoroutineName(DELETE_PAIR_FROM_FAVORITE_KEY)) {
-            deletePairCurrenciesFromFavoriteByCharCodesUseCase.execute(currency.text)
+            deletePairCurrenciesFromFavoriteByCharCodesUseCase.get().execute(currency.text)
                 .onStart { logger.d(TAG_LOG, "$NAME_FULL onStart") }
                 .map { result ->
                     CurrencyUi(
@@ -122,7 +123,7 @@ class FavoritesViewModel @AssistedInject constructor(
 
     private fun savePairToFavorite(currency: CurrencyUi) {
         viewModelScope.launch(dispatcher.main() + exceptionHandler + CoroutineName(SAVE_PAIR_TO_FAVORITE_KEY)) {
-            setPairCurrenciesToFavoriteUseCase.execute(currency.text)
+            setPairCurrenciesToFavoriteUseCase.get().execute(currency.text)
                 .onStart { logger.d(TAG_LOG, "$NAME_FULL onStart") }
                 .map { result ->
                     CurrencyUi(

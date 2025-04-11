@@ -12,6 +12,7 @@ import com.example.currencyratetracking.currencies.ModuleTag.TAG_LOG
 import com.example.currencyratetracking.currencies.domain.*
 import com.example.currencyratetracking.model.CurrencyUi
 import com.example.currencyratetracking.model.Sorting
+import dagger.Lazy
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -23,14 +24,14 @@ import kotlinx.coroutines.launch
 
 class CurrenciesViewModel @AssistedInject constructor(
     private val getListBaseCurrenciesUseCase: GetListBaseCurrenciesUseCase,
-    private val setPairCurrenciesToFavoriteUseCase: SetPairCurrenciesToFavoriteUseCase,
-    private val deletePairCurrenciesFromFavoriteByCharCodesUseCase: DeletePairCurrenciesFromFavoriteByCharCodesUseCase,
     private val getListActualCurrencyRatesByBaseCharCodeUseCase: GetListActualCurrencyRatesByBaseCharCodeUseCase,
     private val getUserSelectedBaseCurrencyUseCase: GetUserSelectedBaseCurrencyUseCase,
-    private val setUserSelectedBaseCurrencyUseCase: SetUserSelectedBaseCurrencyUseCase,
-    private val getListActualCurrencyRatesWithSortByBaseCharCodeUseCase: GetListActualCurrencyRatesWithSortByBaseCharCodeUseCase,
     private val dispatcher: BaseCoroutineDispatcher,
     private val logger: BaseLogger,
+    private val setPairCurrenciesToFavoriteUseCase: Lazy<SetPairCurrenciesToFavoriteUseCase>,
+    private val deletePairCurrenciesFromFavoriteByCharCodesUseCase: Lazy<DeletePairCurrenciesFromFavoriteByCharCodesUseCase>,
+    private val setUserSelectedBaseCurrencyUseCase: Lazy<SetUserSelectedBaseCurrencyUseCase>,
+    private val getListActualCurrencyRatesWithSortByBaseCharCodeUseCase: Lazy<GetListActualCurrencyRatesWithSortByBaseCharCodeUseCase>,
     @Assisted private val savedStateHandle: SavedStateHandle,
 ) : AbstractViewModel() {
 
@@ -156,7 +157,7 @@ class CurrenciesViewModel @AssistedInject constructor(
 
     private fun saveBaseCurrency(currency: String) {
         viewModelScope.launch(dispatcher.main() + exceptionHandler + CoroutineName(SAVE_BASE_CURRENCY_KEY)) {
-            setUserSelectedBaseCurrencyUseCase.execute(currency)
+            setUserSelectedBaseCurrencyUseCase.get().execute(currency)
                 .onStart { logger.d(TAG_LOG, "$NAME_FULL onStart") }
                 .cancellable()
                 .flowOn(dispatcher.io())
@@ -224,7 +225,7 @@ class CurrenciesViewModel @AssistedInject constructor(
             dispatcher.main() + exceptionHandler
                     + CoroutineName(LOAD_LIST_ACTUAL_CURRENCY_RATES_WITH_SORT_KEY)
         ) {
-            getListActualCurrencyRatesWithSortByBaseCharCodeUseCase.execute(name, sorting)
+            getListActualCurrencyRatesWithSortByBaseCharCodeUseCase.get().execute(name, sorting)
                 .onStart { logger.d(TAG_LOG, "$NAME_FULL onStart") }
                 .map { model -> model.toActualCurrencyRateUi() }
                 .transformToList()
@@ -244,7 +245,7 @@ class CurrenciesViewModel @AssistedInject constructor(
 
     private fun savePairToFavorite(currency: CurrencyUi) {
         viewModelScope.launch(dispatcher.main() + exceptionHandler + CoroutineName(SAVE_PAIR_TO_FAVORITE_KEY)) {
-            setPairCurrenciesToFavoriteUseCase.execute(
+            setPairCurrenciesToFavoriteUseCase.get().execute(
                 second = currency.text,
                 base = _uiState.value?.showedBaseCurrency
             )
@@ -298,7 +299,7 @@ class CurrenciesViewModel @AssistedInject constructor(
 
     private fun deletePairFromFavorite(currency: CurrencyUi) {
         viewModelScope.launch(dispatcher.main() + exceptionHandler + CoroutineName(DELETE_PAIR_FROM_FAVORITE_KEY)) {
-            deletePairCurrenciesFromFavoriteByCharCodesUseCase.execute(
+            deletePairCurrenciesFromFavoriteByCharCodesUseCase.get().execute(
                 base = _uiState.value?.showedBaseCurrency,
                 second = currency.text,
             )
