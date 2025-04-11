@@ -3,5 +3,5 @@ package com.example.currencyratetracking.presentation
 
 sealed interface MainUserEvent {
 
-    data object OnCloseApp : MainUserEvent
+    data object OnColdClose : MainUserEvent
 }

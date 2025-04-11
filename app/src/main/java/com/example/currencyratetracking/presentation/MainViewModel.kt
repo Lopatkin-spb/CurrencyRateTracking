@@ -43,7 +43,7 @@ class MainViewModel @AssistedInject constructor(
 
     fun handle(new: MainUserEvent) {
         when (new) {
-            is MainUserEvent.OnCloseApp -> clearUserSession()
+            is MainUserEvent.OnColdClose -> clearUserSession()
         }
     }
 

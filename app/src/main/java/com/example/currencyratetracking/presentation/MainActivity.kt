@@ -19,19 +19,20 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.currencyratetracking.app.CrtApp
 import com.example.currencyratetracking.common_android.BaseLogger
-import com.example.currencyratetracking.core.presentation.AbstractActivity
+import com.example.currencyratetracking.core.presentation.AbstractBackPressedActivity
 import com.example.currencyratetracking.core.presentation.lazyDaggerAssistedViewModel
 import com.example.currencyratetracking.currencies.di.CurrenciesComponent
 import com.example.currencyratetracking.currencies.di.CurrenciesComponentProvider
 import com.example.currencyratetracking.di.app.activity.MainComponent
 import com.example.currencyratetracking.favorites.di.FavoritesComponent
 import com.example.currencyratetracking.favorites.di.FavoritesComponentProvider
+import com.example.currencyratetracking.model.LogLevel
 import com.example.currencyratetracking.presentation.ModuleTag.TAG_LOG
 import com.example.currencyratetracking.ui_theme.CurrencyRateTrackingTheme
 import javax.inject.Inject
 
 
-class MainActivity : AbstractActivity(), CurrenciesComponentProvider, FavoritesComponentProvider {
+class MainActivity : AbstractBackPressedActivity(), CurrenciesComponentProvider, FavoritesComponentProvider {
 
     @Inject
     lateinit var logger: BaseLogger
@@ -45,8 +46,6 @@ class MainActivity : AbstractActivity(), CurrenciesComponentProvider, FavoritesC
         mainComponent.inject(this)
         super.onCreate(savedInstanceState)
 
-        logger.d(TAG_LOG, "$NAME_FULL started")
-
         setContent {
             CurrencyRateTrackingTheme {
                 Content()
@@ -54,35 +53,17 @@ class MainActivity : AbstractActivity(), CurrenciesComponentProvider, FavoritesC
         }
     }
 
-    override fun onStart() {
-        logger.v(TAG_LOG, "$NAME_FULL started")
-        super.onStart()
+    override fun prepareAppForColdClose() {
+        viewModel.handle(MainUserEvent.OnColdClose)
     }
 
-    override fun onRestart() {
-        logger.v(TAG_LOG, "$NAME_FULL started")
-        super.onRestart()
-    }
-
-    override fun onResume() {
-        logger.i(TAG_LOG, "$NAME_FULL started")
-        super.onResume()
-    }
-
-    override fun onPause() {
-        logger.i(TAG_LOG, "$NAME_FULL started")
-        super.onPause()
-    }
-
-    override fun onStop() {
-        logger.v(TAG_LOG, "$NAME_FULL started")
-        viewModel.handle(MainUserEvent.OnCloseApp)
-        super.onStop()
-    }
-
-    override fun onDestroy() {
-        logger.d(TAG_LOG, "$NAME_FULL started")
-        super.onDestroy()
+    override fun logging(level: LogLevel, message: String) {
+        when (level) {
+            LogLevel.VERBOSE -> logger.v(TAG_LOG, message)
+            LogLevel.DEBUG -> logger.d(TAG_LOG, message)
+            LogLevel.INFO -> logger.i(TAG_LOG, message)
+            else -> TODO("Not implemented")
+        }
     }
 
     fun getMainComponent(): MainComponent = mainComponent

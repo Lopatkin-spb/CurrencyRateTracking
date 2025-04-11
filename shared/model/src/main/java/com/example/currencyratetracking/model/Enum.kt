@@ -7,3 +7,12 @@ public enum class Sorting {
     QuoteAsc,
     QuoteDesc,
 }
+
+
+public enum class LogLevel {
+    VERBOSE,
+    DEBUG,
+    INFO,
+    WARN,
+    ERROR,
+}
