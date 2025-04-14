@@ -14,4 +14,6 @@ interface FavoriteLocaleDataSource {
 
     fun setPairCurrenciesToFavorite(model: CurrencyPair): Flow<Boolean>
 
+    fun updatePairCurrencies(data: CurrencyPair): Flow<Boolean>
+
 }

@@ -29,4 +29,8 @@ internal class FavoriteRepositoryImpl @Inject constructor(
     override fun deletePairCurrenciesFromFavorite(data: CurrencyPair): Flow<Boolean> {
         return favoriteLocaleDataSource.deletePairCurrenciesFromFavorite(data)
     }
+
+    override fun updatePairCurrencies(data: CurrencyPair): Flow<Boolean> {
+        return favoriteLocaleDataSource.updatePairCurrencies(data)
+    }
 }

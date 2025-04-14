@@ -48,4 +48,13 @@ internal class FavoriteLocaleDataSourceImpl @Inject constructor(
             .map { it.toFavoriteCurrencyPairDbo() }
             .map { dbo -> favoriteCurrencyPairApi.checkAndInsertUniquePair(dbo) }
     }
+
+    override fun updatePairCurrencies(data: CurrencyPair): Flow<Boolean> {
+        return flow {
+            logger.v(TAG_LOG, "$NAME_FULL started")
+            emit(data)
+        }
+            .map { it.toFavoriteCurrencyPairDbo() }
+            .map { dbo -> favoriteCurrencyPairApi.updatePair(dbo) }
+    }
 }

@@ -1,5 +1,6 @@
 package com.example.currencyratetracking.favorites.presentation
 
+import com.example.currencyratetracking.core.presentation.UiEvent
 import com.example.currencyratetracking.model.CurrencyUi
 
 
@@ -16,8 +17,8 @@ data class FavoritePairCurrenciesRateUi(
 ) : CurrencyUi(id = id, text = text, quotation = quotation, isFavorite = isFavorite)
 
 
-sealed interface FavoritesUserEvent {
-    data object OnScreenOpen : FavoritesUserEvent
-    data object OnScreenClose : FavoritesUserEvent
-    data class OnChangeFavoriteState(val currency: CurrencyUi) : FavoritesUserEvent
+sealed interface FavoritesUiEvent : UiEvent {
+    data object OnScreenOpen : FavoritesUiEvent
+    data object OnScreenClose : FavoritesUiEvent
+    data class OnChangeFavoriteState(val currency: CurrencyUi) : FavoritesUiEvent
 }

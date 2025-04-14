@@ -9,6 +9,7 @@ public enum class Sorting {
 }
 
 
+//todo: move to logger module
 public enum class LogLevel {
     VERBOSE,
     DEBUG,

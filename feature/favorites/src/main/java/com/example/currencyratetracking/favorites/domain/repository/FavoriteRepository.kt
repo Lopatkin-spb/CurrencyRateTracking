@@ -13,4 +13,7 @@ interface FavoriteRepository {
     fun setPairCurrenciesToFavorite(data: CurrencyPair): Flow<Boolean>
 
     fun deletePairCurrenciesFromFavorite(data: CurrencyPair): Flow<Boolean>
+
+    fun updatePairCurrencies(data: CurrencyPair): Flow<Boolean>
+
 }

@@ -29,8 +29,8 @@ fun FavoritesScreen(
     val uiState by viewModel.uiState.observeAsState()
 
     OnLifecycleScreen(
-        onStart = { viewModel.handle(FavoritesUserEvent.OnScreenOpen) },
-        onStop = { viewModel.handle(FavoritesUserEvent.OnScreenClose) },
+        onStart = { viewModel.handle(FavoritesUiEvent.OnScreenOpen) },
+        onStop = { viewModel.handle(FavoritesUiEvent.OnScreenClose) },
     )
 
     uiState?.let { state ->
@@ -45,7 +45,7 @@ fun FavoritesScreen(
 private fun Content(
     modifier: Modifier = Modifier,
     uiState: FavoritesUiState,
-    onEvent: (FavoritesUserEvent) -> Unit,
+    onEvent: (FavoritesUiEvent) -> Unit,
 ) {
 
     ScreenBoxComponent {
@@ -55,7 +55,7 @@ private fun Content(
         CardsListSection(
             modifier = Modifier.padding(start = 16.dp, top = 49.dp, end = 16.dp),
             list = uiState.listFavorites,
-            onFavoriteEvent = { data -> onEvent(FavoritesUserEvent.OnChangeFavoriteState(data)) },
+            onFavoriteEvent = { data -> onEvent(FavoritesUiEvent.OnChangeFavoriteState(data)) },
         )
     }
 }

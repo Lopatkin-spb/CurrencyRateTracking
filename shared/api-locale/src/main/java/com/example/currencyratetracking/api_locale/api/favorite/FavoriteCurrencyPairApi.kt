@@ -81,4 +81,25 @@ interface FavoriteCurrencyPairApi {
         return pairDbo != null
     }
 
+    /**
+     * return true or false
+     */
+    @Transaction
+    suspend fun updatePair(model: FavoriteCurrencyPairDbo): Boolean {
+        val pairDbo = getPairBy(model.charCodeBase, model.charCodeSecond)
+
+        return if (pairDbo != null) {
+            val id = insertPair(model.copy(id = pairDbo.id))
+            return id > 0
+        } else {
+            false
+        }
+    }
+
+    /**
+     * return number cleaned items
+     */
+    @Query("UPDATE $TABLE_FAVORITE_CURRENCY_PAIR SET $COLUMN_QUOTATION = 0.0")
+    suspend fun cleanQuotations(): Int
+
 }
