@@ -4,9 +4,16 @@ import com.example.currencyratetracking.core.presentation.UiEvent
 import com.example.currencyratetracking.model.CurrencyUi
 
 
-data class FavoritesUiState(
-    val listFavorites: List<FavoritePairCurrenciesRateUi> = emptyList(),
-)
+sealed class FavoritesUiState {
+    data object Empty : FavoritesUiState()
+    data object Loading : FavoritesUiState()
+    data class Success(val listFavorites: List<FavoritePairCurrenciesRateUi> = emptyList()) : FavoritesUiState()
+    data class Error(val text: String) : FavoritesUiState()
+
+    fun asSuccess(): Success {
+        return checkNotNull(this as? Success)
+    }
+}
 
 
 data class FavoritePairCurrenciesRateUi(

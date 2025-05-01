@@ -18,7 +18,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.currencyratetracking.app.CrtApp
-import com.example.currencyratetracking.common_android.BaseLogger
 import com.example.currencyratetracking.core.presentation.AbstractBackPressedActivity
 import com.example.currencyratetracking.core.presentation.lazyDaggerAssistedViewModel
 import com.example.currencyratetracking.currencies.di.CurrenciesComponent
@@ -26,20 +25,18 @@ import com.example.currencyratetracking.currencies.di.CurrenciesComponentProvide
 import com.example.currencyratetracking.di.app.activity.MainComponent
 import com.example.currencyratetracking.favorites.di.FavoritesComponent
 import com.example.currencyratetracking.favorites.di.FavoritesComponentProvider
-import com.example.currencyratetracking.model.LogLevel
 import com.example.currencyratetracking.presentation.ModuleTag.TAG_LOG
 import com.example.currencyratetracking.ui_theme.CurrencyRateTrackingTheme
-import javax.inject.Inject
 
 
 class MainActivity : AbstractBackPressedActivity(), CurrenciesComponentProvider, FavoritesComponentProvider {
 
-    @Inject
-    lateinit var logger: BaseLogger
     private lateinit var mainComponent: MainComponent
     private val viewModel: MainViewModel by lazyDaggerAssistedViewModel { stateHandle ->
         mainComponent.getMainViewModel().create(stateHandle)
     }
+
+    override fun getTag(): String = TAG_LOG
 
     override fun onCreate(savedInstanceState: Bundle?) {
         mainComponent = (applicationContext as CrtApp).getAppComponent().getMainComponent().create()
@@ -55,15 +52,6 @@ class MainActivity : AbstractBackPressedActivity(), CurrenciesComponentProvider,
 
     override fun prepareAppForColdClose() {
         viewModel.handle(MainUserEvent.OnColdClose)
-    }
-
-    override fun logging(level: LogLevel, message: String) {
-        when (level) {
-            LogLevel.VERBOSE -> logger.v(TAG_LOG, message)
-            LogLevel.DEBUG -> logger.d(TAG_LOG, message)
-            LogLevel.INFO -> logger.i(TAG_LOG, message)
-            else -> TODO("Not implemented")
-        }
     }
 
     fun getMainComponent(): MainComponent = mainComponent

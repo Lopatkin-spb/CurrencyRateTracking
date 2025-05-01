@@ -30,6 +30,7 @@ dependencies {
     implementation(project(":shared:model"))
     implementation(project(":shared:ui-theme"))
     implementation(project(":shared:common"))
+    implementation(project(":shared:common-android"))
 
     /**
      * androidx

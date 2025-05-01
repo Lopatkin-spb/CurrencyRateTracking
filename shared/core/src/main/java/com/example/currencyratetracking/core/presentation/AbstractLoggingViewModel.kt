@@ -1,5 +1,14 @@
 package com.example.currencyratetracking.core.presentation
 
+import androidx.lifecycle.viewModelScope
+import com.example.currencyratetracking.common_android.BaseLogger
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
+import kotlin.coroutines.CoroutineContext
+
 
 abstract class AbstractLoggingViewModel<in E : UiEvent> : AbstractBaseViewModel<E>() {
 
@@ -38,5 +47,58 @@ abstract class AbstractLoggingViewModel<in E : UiEvent> : AbstractBaseViewModel<
             val name = "$NAME_CLASS $NAME_METHOD()::"
             return name
         }
+
+    protected abstract fun getLogger(): BaseLogger
+
+    protected abstract fun getTag(): String
+
+    override fun handle(new: E) {
+        getLogger().i(getTag(), "$NAME_FULL ${new.javaClass.simpleName}")
+    }
+
+    override fun handle(cause: Throwable, details: String) {
+        when (cause) {
+            is Exception -> getLogger().w(getTag(), "$NAME_FULL parent ${cause.message} $details", cause)
+            else -> getLogger().e(getTag(), "$NAME_FULL parent ${cause.message} $details", cause)
+        }
+    }
+
+
+    protected fun <T> Flow<T>.launchIn(
+        context: CoroutineContext,
+        funLogName: String,
+    ): Job {
+        return launchIn(
+            scope = viewModelScope,
+            context = context,
+            funLogName = funLogName,
+        )
+    }
+
+    protected fun <T> Flow<T>.launchIn(
+        scope: CoroutineScope,
+        context: CoroutineContext,
+        funLogName: String,
+    ): Job {
+        return scope.launch {
+
+            onStart { getLogger().d(getTag(), "$funLogName onStart") }
+
+                .onEach { getLogger().v(getTag(), "$funLogName success") }
+
+                .onCompletion {
+                    if (it is CancellationException) {
+                        getLogger().v(getTag(), "$funLogName cancel")
+                    }
+                    getLogger().d(getTag(), "$funLogName ended")
+                }
+                .collect() // tail-call
+        }
+    }
+
+    override fun onCleared() {
+        getLogger().d(getTag(), "$NAME_FULL started")
+        super.onCleared()
+    }
 
 }

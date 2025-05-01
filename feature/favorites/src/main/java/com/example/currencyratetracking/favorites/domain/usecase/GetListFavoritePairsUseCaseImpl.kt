@@ -1,7 +1,6 @@
 package com.example.currencyratetracking.favorites.domain.usecase
 
 import com.example.currencyratetracking.common.DoubleRoundingConverter
-import com.example.currencyratetracking.common_android.BaseLogger
 import com.example.currencyratetracking.core.domain.AbstractUseCase
 import com.example.currencyratetracking.favorites.domain.GetListFavoritePairsUseCase
 import com.example.currencyratetracking.favorites.domain.repository.FavoriteRepository
@@ -15,7 +14,6 @@ internal class GetListFavoritePairsUseCaseImpl @Inject constructor(
     private val favoriteRepository: FavoriteRepository,
     private val rateRepository: RateRepository,
     private val doubleRoundingConverter: DoubleRoundingConverter,
-    private val logger: BaseLogger,
 ) : GetListFavoritePairsUseCase, AbstractUseCase() {
 
     override fun execute(): Flow<CurrencyPair> {

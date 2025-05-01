@@ -55,7 +55,7 @@ fun <T> Flow<T>.catchCancellation(action: suspend FlowCollector<T>.(Throwable) -
  *
  * => need tests
  */
-fun <T> Flow<T>.catchException(action: suspend FlowCollector<T>.(Throwable) -> Unit): Flow<T> {
+fun <T> Flow<T>.catchException(action: suspend FlowCollector<T>.(Exception) -> Unit): Flow<T> {
     return this.catch { error ->
         when (error) {
             is CancellationException -> throw error

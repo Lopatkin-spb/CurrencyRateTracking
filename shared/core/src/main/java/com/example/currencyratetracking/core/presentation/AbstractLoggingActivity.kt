@@ -2,10 +2,15 @@ package com.example.currencyratetracking.core.presentation
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
-import com.example.currencyratetracking.model.LogLevel
+import com.example.currencyratetracking.common_android.BaseLogger
+import javax.inject.Inject
 
 
 abstract class AbstractLoggingActivity : ComponentActivity() {
+
+    @Inject
+    lateinit var logger: BaseLogger
+    protected abstract fun getTag(): String
 
     private var depth = 2
 
@@ -44,40 +49,45 @@ abstract class AbstractLoggingActivity : ComponentActivity() {
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        logging(LogLevel.DEBUG, "$NAME_FULL started")
+        logger.d(getTag(), "$NAME_FULL started")
+
         super.onCreate(savedInstanceState)
     }
 
     override fun onStart() {
-        logging(LogLevel.VERBOSE, "$NAME_FULL started")
+        logger.v(getTag(), "$NAME_FULL started")
+
         super.onStart()
     }
 
     override fun onRestart() {
-        logging(LogLevel.VERBOSE, "$NAME_FULL started")
+        logger.v(getTag(), "$NAME_FULL started")
+
         super.onRestart()
     }
 
     override fun onResume() {
-        logging(LogLevel.VERBOSE, "$NAME_FULL started")
+        logger.i(getTag(), "$NAME_FULL started")
+
         super.onResume()
     }
 
     override fun onPause() {
-        logging(LogLevel.INFO, "$NAME_FULL started")
+        logger.i(getTag(), "$NAME_FULL started")
+
         super.onPause()
     }
 
     override fun onStop() {
-        logging(LogLevel.VERBOSE, "$NAME_FULL started")
+        logger.v(getTag(), "$NAME_FULL started")
+
         super.onStop()
     }
 
     override fun onDestroy() {
-        logging(LogLevel.DEBUG, "$NAME_FULL started")
+        logger.d(getTag(), "$NAME_FULL started")
+
         super.onDestroy()
     }
-
-    protected abstract fun logging(level: LogLevel, message: String)
 
 }

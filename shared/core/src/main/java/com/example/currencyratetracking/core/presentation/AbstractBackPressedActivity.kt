@@ -2,7 +2,6 @@ package com.example.currencyratetracking.core.presentation
 
 import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
-import com.example.currencyratetracking.model.LogLevel
 
 
 abstract class AbstractBackPressedActivity : AbstractLoggingActivity() {
@@ -19,7 +18,7 @@ abstract class AbstractBackPressedActivity : AbstractLoggingActivity() {
         this.onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
 
             override fun handleOnBackPressed() {
-                logging(LogLevel.INFO, "$NAME_FULL started")
+                logger.i(getTag(), "$NAME_FULL started")
 
                 if (isEnabled) {
                     prepareAppForColdClose()
