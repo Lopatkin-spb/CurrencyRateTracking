@@ -1,6 +1,7 @@
 package com.example.currencyratetracking.favorites.data.remote
 
 import com.example.currencyratetracking.api_remote.api.RatesApi
+import com.example.currencyratetracking.api_remote.api.toListRatesDto
 import com.example.currencyratetracking.common_android.BaseLogger
 import com.example.currencyratetracking.core.data.AbstractDataSource
 import com.example.currencyratetracking.favorites.ModuleTag.TAG_LOG
@@ -19,7 +20,7 @@ internal class RateRemoteDataSourceImpl @Inject constructor(
             logger.v(TAG_LOG, "$NAME_FULL started")
             emit(ratesApi.getRates(pair.charCodeBase.name))
         }
-            .map { response -> response.rates?.getListRatesDto() }
+            .map { response -> response.rates?.toListRatesDto() }
             .filterNotNull()
             .transform { list -> emitAll(list.asFlow()) }
             .map { dto -> dto.toCurrency() }

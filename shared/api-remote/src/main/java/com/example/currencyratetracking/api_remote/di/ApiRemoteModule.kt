@@ -2,6 +2,7 @@ package com.example.currencyratetracking.api_remote.di
 
 import com.example.currencyratetracking.api_remote.api.*
 import com.example.currencyratetracking.common.ApplicationScope
+import com.example.currencyratetracking.common.di.BuildType
 import dagger.Binds
 import dagger.Module
 import dagger.Provides

@@ -1,6 +1,7 @@
 package com.example.currencyratetracking.common_android
 
 import android.util.Log
+import com.example.currencyratetracking.common.di.BuildType
 import javax.inject.Inject
 
 
@@ -14,9 +15,11 @@ interface BaseLogger {
 
 }
 
-internal class LogcatBaseLogger @Inject constructor() : BaseLogger {
+internal class LogcatBaseLogger @Inject constructor(@BuildType private val buildType: String) : BaseLogger {
 
     override fun v(tag: String, msg: String) {
+        if (isNotDebugBuild()) return
+
         if (tag.isEmpty()) {
             TODO("Tag cannot be empty")
         } else {
@@ -25,6 +28,8 @@ internal class LogcatBaseLogger @Inject constructor() : BaseLogger {
     }
 
     override fun d(tag: String, msg: String) {
+        if (isNotDebugBuild()) return
+
         if (tag.isEmpty()) {
             TODO("Tag cannot be empty")
         } else {
@@ -33,6 +38,8 @@ internal class LogcatBaseLogger @Inject constructor() : BaseLogger {
     }
 
     override fun i(tag: String, msg: String) {
+        if (isNotDebugBuild()) return
+
         if (tag.isEmpty()) {
             TODO("Tag cannot be empty")
         } else {
@@ -41,6 +48,8 @@ internal class LogcatBaseLogger @Inject constructor() : BaseLogger {
     }
 
     override fun w(tag: String, msg: String, cause: Throwable) {
+        if (isNotDebugBuild()) return
+
         if (tag.isEmpty()) {
             TODO("Tag cannot be empty")
         } else {
@@ -49,11 +58,16 @@ internal class LogcatBaseLogger @Inject constructor() : BaseLogger {
     }
 
     override fun e(tag: String, msg: String, cause: Throwable) {
+        if (isNotDebugBuild()) return
+
         if (tag.isEmpty()) {
             TODO("Tag cannot be empty")
         } else {
             Log.e(tag, msg, cause)
         }
+    }
+    private fun isNotDebugBuild(): Boolean {
+        return buildType != "debug"
     }
 
 }

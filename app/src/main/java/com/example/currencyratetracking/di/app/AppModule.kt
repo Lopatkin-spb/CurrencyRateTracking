@@ -6,8 +6,8 @@ import com.example.currencyratetracking.BuildConfig
 import com.example.currencyratetracking.api_locale.di.ApiLocaleModule
 import com.example.currencyratetracking.api_remote.di.ApiRemoteModule
 import com.example.currencyratetracking.api_remote.di.ApiUrl
-import com.example.currencyratetracking.api_remote.di.BuildType
 import com.example.currencyratetracking.common.ApplicationScope
+import com.example.currencyratetracking.common.di.BuildType
 import com.example.currencyratetracking.common.di.CommonModule
 import com.example.currencyratetracking.common_android.di.CommonAndroidModule
 import com.example.currencyratetracking.di.app.activity.MainComponent
