@@ -9,11 +9,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
@@ -26,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import com.example.currencyratetracking.core.presentation.*
 import com.example.currencyratetracking.currencies.R
 import com.example.currencyratetracking.currencies.di.CurrenciesComponentProvider
+import com.example.currencyratetracking.currencies.presentation.CurrenciesUiState.Empty.toSuccess
 import com.example.currencyratetracking.model.Sorting
 import com.example.currencyratetracking.ui_theme.CurrencyRateTrackingTheme
 import com.example.currencyratetracking.ui_theme.Default
@@ -39,19 +36,17 @@ fun CurrenciesScreen(
         (context as CurrenciesComponentProvider).provideCurrenciesComponent().getViewModel().create(stateHandle)
     },
 ) {
-    val uiState by viewModel.uiState.observeAsState()
+    val uiState by viewModel.uiState.collectAsState()
 
     OnLifecycleScreen(
         onStart = { viewModel.handle(CurrenciesUserEvent.OnScreenOpen) },
         onStop = { viewModel.handle(CurrenciesUserEvent.OnScreenClose) },
     )
 
-    uiState?.let { state ->
-        Content(
-            uiState = state,
-            onEvent = { event -> viewModel.handle(event) }
-        )
-    }
+    Content(
+        uiState = uiState,
+        onEvent = { event -> viewModel.handle(event) }
+    )
 }
 
 
@@ -64,24 +59,69 @@ private fun Content(
 
     ScreenBoxComponent {
 
-        ToolbarSelectComponent(
-            title = R.string.title_currencies,
-            uiState = uiState,
-            onEvent = onEvent,
-        )
-
-        CardsListSection(
-            modifier = Modifier.padding(start = 16.dp, top = 117.dp, end = 16.dp),
-            list = uiState.listActualCurrencyRates,
-            onFavoriteEvent = { data -> onEvent(CurrenciesUserEvent.OnChangeFavoriteState(data)) },
-        )
-
-        if (uiState.isFiltersLifecycle != null) {
-            FiltersSection(modifier = modifier, uiState = uiState, onEvent = onEvent)
+        when (uiState) {
+            is CurrenciesUiState.Loading -> LoadingState(uiState = uiState)
+            is CurrenciesUiState.Empty -> {}
+            is CurrenciesUiState.Error -> {}
+            is CurrenciesUiState.Success -> SuccessState(uiState = uiState, onEvent = onEvent)
         }
     }
 }
 
+
+@Composable
+private fun LoadingState(
+    modifier: Modifier = Modifier,
+    uiState: CurrenciesUiState,
+) {
+    ToolbarSelectComponent(
+        title = R.string.title_currencies,
+        uiState = uiState,
+        onEvent = {},
+    )
+    IndeterminateCircularIndicator()
+}
+
+
+@Composable
+private fun SuccessState(
+    modifier: Modifier = Modifier,
+    uiState: CurrenciesUiState,
+    onEvent: (CurrenciesUserEvent) -> Unit,
+) {
+    ToolbarSelectComponent(
+        title = R.string.title_currencies,
+        uiState = uiState,
+        onEvent = onEvent,
+    )
+
+    CardsListSection(
+        modifier = Modifier.padding(start = 16.dp, top = 117.dp, end = 16.dp),
+        list = uiState.listActualCurrencyRates,
+        onFavoriteEvent = { data -> onEvent(CurrenciesUserEvent.OnChangeFavoriteState(data)) },
+    )
+
+    if (uiState.isFiltersLifecycle != null) {
+        FiltersSection(modifier = modifier, uiState = uiState, onEvent = onEvent)
+    }
+}
+
+
+@Composable
+private fun IndeterminateCircularIndicator(
+    modifier: Modifier = Modifier,
+) {
+
+    Box(
+        modifier = modifier.padding(top = 150.dp).fillMaxWidth().wrapContentHeight()
+    ) {
+        CircularProgressIndicator(
+            modifier = Modifier.width(40.dp).align(Alignment.TopCenter),
+            color = MaterialTheme.colorScheme.primary,
+            trackColor = MaterialTheme.colorScheme.primaryContainer,
+        )
+    }
+}
 
 //TODO: add surface to toolbar
 @Composable
@@ -235,7 +275,7 @@ private fun FiltersSection(
     onEvent: (CurrenciesUserEvent) -> Unit,
 ) {
     ModalBottomSheetWithOutsideControl(
-        state = uiState.isFiltersLifecycle,
+        state = uiState.toSuccess().isFiltersLifecycle,
         onResetState = { onEvent(CurrenciesUserEvent.OnResetFiltersState) },
         sheetContent = { SheetContent(modifier, uiState, onEvent) },
     )
@@ -298,22 +338,22 @@ private fun SortingSection(
 //todo: optimize
         Column(modifier = Modifier.padding(top = 32.dp).selectableGroup()) {
             SortingSelectComponent(
-                selected = uiState.sorting == Sorting.CodeAZ,
+                selected = uiState.toSuccess().sorting == Sorting.CodeAZ,
                 text = R.string.text_sorting_code_a_z,
                 onClick = { onEvent(CurrenciesUserEvent.OnSortingSelect(Sorting.CodeAZ)) },
             )
             SortingSelectComponent(
-                selected = uiState.sorting == Sorting.CodeZA,
+                selected = uiState.toSuccess().sorting == Sorting.CodeZA,
                 text = R.string.text_sorting_code_z_a,
                 onClick = { onEvent(CurrenciesUserEvent.OnSortingSelect(Sorting.CodeZA)) },
             )
             SortingSelectComponent(
-                selected = uiState.sorting == Sorting.QuoteAsc,
+                selected = uiState.toSuccess().sorting == Sorting.QuoteAsc,
                 text = R.string.text_sorting_quote_asc,
                 onClick = { onEvent(CurrenciesUserEvent.OnSortingSelect(Sorting.QuoteAsc)) },
             )
             SortingSelectComponent(
-                selected = uiState.sorting == Sorting.QuoteDesc,
+                selected = uiState.toSuccess().sorting == Sorting.QuoteDesc,
                 text = R.string.text_sorting_quote_desc,
                 onClick = { onEvent(CurrenciesUserEvent.OnSortingSelect(Sorting.QuoteDesc)) },
             )
@@ -367,9 +407,12 @@ private fun ScreenPreview() {
         listStub.add(item)
     }
 
+    val success = CurrenciesUiState.Success(listActualCurrencyRates = listStub, isFiltersLifecycle = true)
+    val loading = CurrenciesUiState.Loading(showedBaseCurrency = "sgfsd")
+
     CurrencyRateTrackingTheme {
         Content(
-            uiState = CurrenciesUiState(listActualCurrencyRates = listStub, isFiltersLifecycle = true),
+            uiState = loading,
             onEvent = {}
         )
     }

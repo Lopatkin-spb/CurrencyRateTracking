@@ -1,16 +1,15 @@
 package com.example.currencyratetracking.currencies.presentation
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.viewModelScope
 import com.example.currencyratetracking.common_android.BaseLogger
-import com.example.currencyratetracking.core.*
-import com.example.currencyratetracking.core.presentation.AbstractViewModel
+import com.example.currencyratetracking.core.BaseCoroutineDispatcher
+import com.example.currencyratetracking.core.presentation.AbstractLoggingViewModel
 import com.example.currencyratetracking.core.presentation.ViewModelAssistedSavedStateFactory
+import com.example.currencyratetracking.core.transformToList
 import com.example.currencyratetracking.currencies.ModuleTag.TAG_LOG
 import com.example.currencyratetracking.currencies.domain.*
-import com.example.currencyratetracking.model.CurrencyUi
+import com.example.currencyratetracking.currencies.presentation.CurrenciesUiState.Empty.toLoading
+import com.example.currencyratetracking.currencies.presentation.CurrenciesUiState.Empty.toSuccess
 import com.example.currencyratetracking.model.Sorting
 import dagger.Lazy
 import dagger.assisted.Assisted
@@ -19,7 +18,7 @@ import dagger.assisted.AssistedInject
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
+import kotlin.coroutines.cancellation.CancellationException
 
 
 class CurrenciesViewModel @AssistedInject constructor(
@@ -33,301 +32,211 @@ class CurrenciesViewModel @AssistedInject constructor(
     private val setUserSelectedBaseCurrencyUseCase: Lazy<SetUserSelectedBaseCurrencyUseCase>,
     private val getListActualCurrencyRatesWithSortByBaseCharCodeUseCase: Lazy<GetListActualCurrencyRatesWithSortByBaseCharCodeUseCase>,
     @Assisted private val savedStateHandle: SavedStateHandle,
-) : AbstractViewModel() {
+) : AbstractLoggingViewModel<CurrenciesUserEvent>() {
 
     @AssistedFactory
     interface Factory : ViewModelAssistedSavedStateFactory<CurrenciesViewModel>
 
-    //todo: renames to NAME_...
     companion object {
-        private const val LOAD_LIST_BASE_CURRENCIES_KEY: String =
-            "com.example.currencyratetracking.currencies.presentation.LOAD_LIST_BASE_CURRENCIES_KEY"
-        private const val SAVE_PAIR_TO_FAVORITE_KEY: String =
-            "com.example.currencyratetracking.currencies.presentation.SAVE_PAIR_TO_FAVORITE_KEY"
-        private const val DELETE_PAIR_FROM_FAVORITE_KEY: String =
-            "com.example.currencyratetracking.currencies.presentation.DELETE_PAIR_FROM_FAVORITE_KEY"
-        private const val LOAD_LIST_ACTUAL_CURRENCY_RATES_KEY: String =
-            "com.example.currencyratetracking.currencies.presentation.LOAD_LIST_ACTUAL_CURRENCY_RATES_KEY"
-        private const val LOAD_BASE_CURRENCY_KEY: String =
-            "com.example.currencyratetracking.currencies.presentation.LOAD_BASE_CURRENCY_KEY"
-        private const val SAVE_BASE_CURRENCY_KEY: String =
-            "com.example.currencyratetracking.currencies.presentation.SAVE_BASE_CURRENCY_KEY"
-        private const val LOAD_LIST_ACTUAL_CURRENCY_RATES_WITH_SORT_KEY: String =
-            "com.example.currencyratetracking.currencies.presentation.LOAD_LIST_ACTUAL_CURRENCY_RATES_WITH_SORT_KEY"
+        private const val NAME_LOAD_LIST_BASE_CURRENCIES: String =
+            "com.example.currencyratetracking.currencies.presentation.NAME_LOAD_LIST_BASE_CURRENCIES"
+        private const val NAME_SAVE_PAIR_TO_FAVORITE: String =
+            "com.example.currencyratetracking.currencies.presentation.NAME_SAVE_PAIR_TO_FAVORITE"
+        private const val NAME_DELETE_PAIR_FROM_FAVORITE: String =
+            "com.example.currencyratetracking.currencies.presentation.NAME_DELETE_PAIR_FROM_FAVORITE"
+        private const val NAME_LOAD_LIST_ACTUAL_CURRENCY_RATES: String =
+            "com.example.currencyratetracking.currencies.presentation.NAME_LOAD_LIST_ACTUAL_CURRENCY_RATES"
+        private const val NAME_LOAD_BASE_CURRENCY: String =
+            "com.example.currencyratetracking.currencies.presentation.NAME_LOAD_BASE_CURRENCY"
+        private const val NAME_SAVE_BASE_CURRENCY: String =
+            "com.example.currencyratetracking.currencies.presentation.NAME_SAVE_BASE_CURRENCY"
+        private const val NAME_LOAD_LIST_ACTUAL_CURRENCY_RATES_WITH_SORT: String =
+            "com.example.currencyratetracking.currencies.presentation.NAME_LOAD_LIST_ACTUAL_CURRENCY_RATES_WITH_SORT"
     }
 
-    //TODO: add loading
-
-    private val _uiState = MutableLiveData(CurrenciesUiState())
-    val uiState: LiveData<CurrenciesUiState> = _uiState
-    private val exceptionHandler = CoroutineExceptionHandler { coroutineContext, cause ->
-        logger.e(TAG_LOG, "$NAME_CLASS CoroutineExceptionHandler: $coroutineContext", cause)
-    }
+    private val _uiState: MutableStateFlow<CurrenciesUiState> = MutableStateFlow(CurrenciesUiState.Empty)
+    val uiState: StateFlow<CurrenciesUiState> get() = _uiState.asStateFlow()
+    private val exceptionHandler =
+        CoroutineExceptionHandler { coroutineContext, cause -> handle(cause, "$coroutineContext") }
 
     init {
         logger.d(TAG_LOG, "$NAME_FULL started")
-
-        //todo: remove from this
         loadListBaseCurrencies()
     }
 
 
-    fun handle(new: CurrenciesUserEvent) {
+    override fun handle(new: CurrenciesUserEvent) {
+        super.handle(new)
+
         when (new) {
-            is CurrenciesUserEvent.OnScreenOpen -> {
-                logger.i(TAG_LOG, "$NAME_FULL OnScreenOpen")
+            is CurrenciesUserEvent.OnScreenOpen -> selectLoading()
+            is CurrenciesUserEvent.OnScreenClose -> {}
+            is CurrenciesUserEvent.OnChangeBaseCurrency ->
+                if (new.name != _uiState.value.showedBaseCurrency) saveBaseCurrency(new.name)
 
-                //todo: separate to new function
-                _uiState.value?.let { state ->
+            is CurrenciesUserEvent.OnChangeFavoriteState -> selectActionToFavorite(new.currency.toActualCurrencyRateUi())
+            is CurrenciesUserEvent.OnOpenFilters ->
+                _uiState.update { state -> state.toSuccess().copy(isFiltersLifecycle = true) }
 
-                    if (state.showedBaseCurrency.isEmpty()) {
-                        loadBaseCurrency()
-                    } else if (state.isSortingEnabled) {
+            is CurrenciesUserEvent.OnCloseFilters ->
+                _uiState.update { state -> state.toSuccess().copy(isFiltersLifecycle = false) }
+
+            is CurrenciesUserEvent.OnResetFiltersState ->
+                _uiState.update { state -> state.toSuccess().copy(isFiltersLifecycle = null) }
+
+            is CurrenciesUserEvent.OnApplyFilters ->
+                _uiState.updateAndGet { state ->
+                    state.toSuccess().copy(isFiltersLifecycle = false, isSortingApply = true)
+                }.also { loadListActualCurrencyRatesWithSort(it.showedBaseCurrency, it.sorting) }
+
+            is CurrenciesUserEvent.OnSortingSelect ->
+                _uiState.update { state -> state.toSuccess().copy(sorting = new.select) }
+        }
+    }
+
+    private fun selectLoading() {
+        _uiState.value.also { state ->
+            if (state.showedBaseCurrency.isEmpty()) {
+                loadBaseCurrency()
+            } else if (state.isSortingApply) {
+                loadListActualCurrencyRatesWithSort(state.showedBaseCurrency, state.sorting)
+            } else {
+                loadListActualCurrencyRates(state.showedBaseCurrency)
+            }
+        }
+    }
+
+    private fun selectActionToFavorite(currency: ActualCurrencyRateUi) {
+        _uiState.value.also { state ->
+            if (currency.isFavorite) savePairToFavorite(currency, state.showedBaseCurrency)
+            else deletePairFromFavorite(currency, state.showedBaseCurrency)
+        }
+    }
+
+    private fun loadBaseCurrency() {
+        getUserSelectedBaseCurrencyUseCase.execute()
+            .onStart { _uiState.update { state -> state.toLoading() } }
+            .onEach { currencyCharCode ->
+                _uiState.update { state -> state.toLoading().copy(showedBaseCurrency = currencyCharCode) }
+            }
+            .onEach { currencyCharCode -> loadListActualCurrencyRates(currencyCharCode) }
+            .onCompletion { if (it is CancellationException) _uiState.update { CurrenciesUiState.Error(text = "Cancellation error") } }
+            .launchIn(
+                context = dispatcher.io() + exceptionHandler + CoroutineName(NAME_LOAD_BASE_CURRENCY),
+                funLogName = NAME_FULL,
+            )
+    }
+
+    private fun saveBaseCurrency(currency: String) {
+        setUserSelectedBaseCurrencyUseCase.get().execute(currency)
+            .onStart { _uiState.update { state -> state.toLoading() } }
+            .onEach { isSuccess ->
+                _uiState.updateAndGet { state ->
+                    if (isSuccess) state.toLoading().copy(showedBaseCurrency = currency) else state
+                }.also { state ->
+                    if (isSuccess && state.isSortingApply) {
                         loadListActualCurrencyRatesWithSort(state.showedBaseCurrency, state.sorting)
-                    } else {
+                    } else if (isSuccess && !state.isSortingApply) {
                         loadListActualCurrencyRates(state.showedBaseCurrency)
                     }
                 }
             }
-
-            is CurrenciesUserEvent.OnScreenClose -> {
-                logger.i(TAG_LOG, "$NAME_FULL OnScreenClose")
-            }
-
-            is CurrenciesUserEvent.OnChangeBaseCurrency -> {
-                logger.i(TAG_LOG, "$NAME_FULL OnChangeBaseCurrency")
-                saveBaseCurrency(new.name)
-            }
-
-            is CurrenciesUserEvent.OnChangeFavoriteState -> {
-                logger.i(TAG_LOG, "$NAME_FULL OnChangeFavoriteState")
-                if (new.currency.isFavorite) savePairToFavorite(new.currency)
-                else deletePairFromFavorite(new.currency)
-            }
-
-            is CurrenciesUserEvent.OnOpenFilters -> {
-                logger.i(TAG_LOG, "$NAME_FULL OnOpenFilters")
-                _uiState.value = _uiState.value?.copy(isFiltersLifecycle = true)
-            }
-
-            is CurrenciesUserEvent.OnCloseFilters -> {
-                logger.i(TAG_LOG, "$NAME_FULL OnCloseFilters")
-                _uiState.value = _uiState.value?.copy(isFiltersLifecycle = false)
-            }
-
-            is CurrenciesUserEvent.OnResetFiltersState -> {
-                logger.i(TAG_LOG, "$NAME_FULL OnResetFiltersState")
-                _uiState.value = _uiState.value?.copy(isFiltersLifecycle = null)
-            }
-
-            is CurrenciesUserEvent.OnApplyFilters -> {
-                logger.i(TAG_LOG, "$NAME_FULL OnApplyFilters")
-                _uiState.value = _uiState.value?.copy(isFiltersLifecycle = false, isSortingEnabled = true)
-                _uiState.value?.let { state ->
-                    loadListActualCurrencyRatesWithSort(state.showedBaseCurrency, state.sorting)
-                }
-            }
-
-            is CurrenciesUserEvent.OnSortingSelect -> {
-                logger.i(TAG_LOG, "$NAME_FULL OnSortingSelect")
-                _uiState.value = _uiState.value?.copy(sorting = new.select)
-            }
-        }
+            .onCompletion { if (it is CancellationException) _uiState.update { CurrenciesUiState.Error(text = "Cancellation error") } }
+            .launchIn(
+                context = dispatcher.io() + exceptionHandler + CoroutineName(NAME_SAVE_BASE_CURRENCY),
+                funLogName = NAME_FULL,
+            )
     }
-
-
-    private fun loadBaseCurrency() {
-        viewModelScope.launch(dispatcher.main() + exceptionHandler + CoroutineName(LOAD_BASE_CURRENCY_KEY)) {
-            getUserSelectedBaseCurrencyUseCase.execute()
-                .onStart { logger.d(TAG_LOG, "$NAME_FULL onStart") }
-                .cancellable()
-                .flowOn(dispatcher.io())
-                .onEach { result ->
-                    _uiState.value = _uiState.value?.copy(showedBaseCurrency = result)
-                    logger.v(TAG_LOG, "$NAME_FULL success")
-                    loadListActualCurrencyRates(result)
-                }
-                .catchCancellation { logger.v(TAG_LOG, "$NAME_FULL cancel") }
-                .catchException { logger.w(TAG_LOG, "$NAME_FULL ${it.message}", it) }
-                .onCompletion { finally -> logger.d(TAG_LOG, "$NAME_FULL ended") }
-                .collect()
-        }
-    }
-
-
-    private fun saveBaseCurrency(currency: String) {
-        viewModelScope.launch(dispatcher.main() + exceptionHandler + CoroutineName(SAVE_BASE_CURRENCY_KEY)) {
-            setUserSelectedBaseCurrencyUseCase.get().execute(currency)
-                .onStart { logger.d(TAG_LOG, "$NAME_FULL onStart") }
-                .cancellable()
-                .flowOn(dispatcher.io())
-                .onEach { result ->
-                    if (result) _uiState.value = _uiState.value?.copy(showedBaseCurrency = currency)
-                    logger.v(TAG_LOG, "$NAME_FULL success")
-
-                    _uiState.value?.let { state ->
-                        if (result && state.isSortingEnabled) {
-                            loadListActualCurrencyRatesWithSort(currency, state.sorting)
-                        } else if (!state.isSortingEnabled && result) {
-                            loadListActualCurrencyRates(currency)
-                        }
-                    }
-                }
-                .catchCancellation { logger.v(TAG_LOG, "$NAME_FULL cancel") }
-                .catchException { logger.w(TAG_LOG, "$NAME_FULL ${it.message}", it) }
-                .onCompletion { finally -> logger.d(TAG_LOG, "$NAME_FULL ended") }
-                .collect()
-        }
-    }
-
 
     //TODO: bug if list > screen then dropdownmenu unsize
     private fun loadListBaseCurrencies() {
-        viewModelScope.launch(dispatcher.main() + exceptionHandler + CoroutineName(LOAD_LIST_BASE_CURRENCIES_KEY)) {
-            getListBaseCurrenciesUseCase.execute()
-                .onStart { logger.d(TAG_LOG, "$NAME_FULL onStart") }
-                .cancellable()
-                .flowOn(dispatcher.io())
-                .onEach { list ->
-                    _uiState.value = _uiState.value?.copy(listBaseCurrencies = list)
-                    logger.v(TAG_LOG, "$NAME_FULL success")
-                }
-                .catchCancellation { logger.v(TAG_LOG, "$NAME_FULL cancel") }
-                .catchException { logger.w(TAG_LOG, "$NAME_FULL ${it.message}", it) }
-                .onCompletion { finally -> logger.d(TAG_LOG, "$NAME_FULL ended") }
-                .collect()
-        }
+        getListBaseCurrenciesUseCase.execute()
+            .onStart { _uiState.update { state -> state.toLoading() } }
+            .onEach { list -> _uiState.update { state -> state.toLoading().copy(listBaseCurrencies = list) } }
+            .onCompletion { if (it is CancellationException) _uiState.update { CurrenciesUiState.Error(text = "Cancellation error") } }
+            .launchIn(
+                context = dispatcher.io() + exceptionHandler + CoroutineName(NAME_LOAD_LIST_BASE_CURRENCIES),
+                funLogName = NAME_FULL,
+            )
     }
-
 
     private fun loadListActualCurrencyRates(name: String) {
-        viewModelScope.launch(dispatcher.main() + exceptionHandler + CoroutineName(LOAD_LIST_ACTUAL_CURRENCY_RATES_KEY)) {
-            getListActualCurrencyRatesByBaseCharCodeUseCase.execute(name)
-                .onStart { logger.d(TAG_LOG, "$NAME_FULL onStart") }
-                .map { model -> model.toActualCurrencyRateUi() }
-                .transformToList()
-                .cancellable()
-                .flowOn(dispatcher.io())
-                .onEach { list ->
-                    _uiState.value = _uiState.value?.copy(listActualCurrencyRates = list)
-                    logger.v(TAG_LOG, "$NAME_FULL success")
-                }
-                .catchCancellation { logger.v(TAG_LOG, "$NAME_FULL cancel") }
-                .catchException { logger.w(TAG_LOG, "$NAME_FULL ${it.message}", it) }
-                .onCompletion { finally -> logger.d(TAG_LOG, "$NAME_FULL ended") }
-                .collect()
-        }
+        getListActualCurrencyRatesByBaseCharCodeUseCase.execute(name)
+            .onStart { _uiState.update { state -> state.toLoading() } }
+            .map { currency -> currency.toActualCurrencyRateUi() }
+            .transformToList()
+            .cancellable()
+            .onEach { list -> _uiState.update { state -> state.toSuccess().copy(listActualCurrencyRates = list) } }
+            .onCompletion { if (it is CancellationException) _uiState.update { CurrenciesUiState.Error(text = "Cancellation error") } }
+            .launchIn(
+                context = dispatcher.io() + exceptionHandler + CoroutineName(NAME_LOAD_LIST_ACTUAL_CURRENCY_RATES),
+                funLogName = NAME_FULL,
+            )
     }
-
 
     private fun loadListActualCurrencyRatesWithSort(name: String, sorting: Sorting?) {
-        viewModelScope.launch(
-            dispatcher.main() + exceptionHandler
-                    + CoroutineName(LOAD_LIST_ACTUAL_CURRENCY_RATES_WITH_SORT_KEY)
-        ) {
-            getListActualCurrencyRatesWithSortByBaseCharCodeUseCase.get().execute(name, sorting)
-                .onStart { logger.d(TAG_LOG, "$NAME_FULL onStart") }
-                .map { model -> model.toActualCurrencyRateUi() }
-                .transformToList()
-                .cancellable()
-                .flowOn(dispatcher.io())
-                .onEach { list ->
-                    _uiState.value = _uiState.value?.copy(listActualCurrencyRates = list)
-                    logger.v(TAG_LOG, "$NAME_FULL success list=$list")
-                }
-                .catchCancellation { logger.v(TAG_LOG, "$NAME_FULL cancel") }
-                .catchException { logger.w(TAG_LOG, "$NAME_FULL ${it.message}", it) }
-                .onCompletion { finally -> logger.d(TAG_LOG, "$NAME_FULL ended") }
-                .collect()
-        }
-    }
-
-
-    private fun savePairToFavorite(currency: CurrencyUi) {
-        viewModelScope.launch(dispatcher.main() + exceptionHandler + CoroutineName(SAVE_PAIR_TO_FAVORITE_KEY)) {
-            setPairCurrenciesToFavoriteUseCase.get().execute(
-                second = currency.text,
-                base = _uiState.value?.showedBaseCurrency
+        getListActualCurrencyRatesWithSortByBaseCharCodeUseCase.get().execute(name, sorting)
+            .onStart { _uiState.update { state -> state.toLoading() } }
+            .map { currency -> currency.toActualCurrencyRateUi() }
+            .transformToList()
+            .cancellable()
+            .onEach { list -> _uiState.update { state -> state.toSuccess().copy(listActualCurrencyRates = list) } }
+            .onCompletion { if (it is CancellationException) _uiState.update { CurrenciesUiState.Error(text = "Cancellation error") } }
+            .launchIn(
+                context = dispatcher.io() + exceptionHandler +
+                        CoroutineName(NAME_LOAD_LIST_ACTUAL_CURRENCY_RATES_WITH_SORT),
+                funLogName = NAME_FULL,
             )
-                .onStart { logger.d(TAG_LOG, "$NAME_FULL onStart") }
-                .map { result ->
-                    CurrencyUi(
-                        id = currency.id,
-                        text = currency.text,
-                        quotation = currency.quotation,
-                        isFavorite = result,
-                    )
-                }
-                .cancellable()
-                .flowOn(dispatcher.io())
-                .onEach { model ->
-                    updateListActualCurrencyRates(model)
-                    logger.v(TAG_LOG, "$NAME_FULL success")
-                }
-                .catchCancellation { logger.v(TAG_LOG, "$NAME_FULL cancel") }
-                .catchException { logger.w(TAG_LOG, "$NAME_FULL ${it.message}", it) }
-                .onCompletion { finally -> logger.d(TAG_LOG, "$NAME_FULL ended") }
-                .collect()
-        }
     }
 
+    private fun savePairToFavorite(currency: ActualCurrencyRateUi, baseCharCode: String) {
+        setPairCurrenciesToFavoriteUseCase.get().execute(second = currency.text, base = baseCharCode)
+            .map { isSaved -> currency.copy(isFavorite = isSaved) }
+            .cancellable()
+            .onEach { newCurrency -> updateListActualCurrencyRates(newCurrency) }
+            .onCompletion { if (it is CancellationException) _uiState.update { CurrenciesUiState.Error(text = "Cancellation error") } }
+            .launchIn(
+                context = dispatcher.io() + exceptionHandler + CoroutineName(NAME_SAVE_PAIR_TO_FAVORITE),
+                funLogName = NAME_FULL,
+            )
+    }
 
-    //TODO: optimize in future
-    private fun updateListActualCurrencyRates(new: CurrencyUi) {
-        logger.v(TAG_LOG, "$NAME_FULL started")
+    private fun deletePairFromFavorite(secondCurrency: ActualCurrencyRateUi, baseCharCode: String) {
+        deletePairCurrenciesFromFavoriteByCharCodesUseCase.get()
+            .execute(base = baseCharCode, second = secondCurrency.text)
+            .map { isSaved -> secondCurrency.copy(isFavorite = !isSaved) }
+            .cancellable()
+            .onEach { newCurrency -> updateListActualCurrencyRates(newCurrency) }
+            .onCompletion { if (it is CancellationException) _uiState.update { CurrenciesUiState.Error(text = "Cancellation error") } }
+            .launchIn(
+                context = dispatcher.io() + exceptionHandler + CoroutineName(NAME_DELETE_PAIR_FROM_FAVORITE),
+                funLogName = NAME_FULL,
+            )
+    }
 
-        val newList = arrayListOf<ActualCurrencyRateUi>()
-        _uiState.value?.listActualCurrencyRates?.let {
-            it.forEach {
-                if (it.id == new.id) {
-                    newList.add(
-                        ActualCurrencyRateUi(
-                            id = new.id,
-                            text = new.text,
-                            quotation = new.quotation,
-                            isFavorite = new.isFavorite,
-                        )
-                    )
+    private fun updateListActualCurrencyRates(new: ActualCurrencyRateUi) {
+        _uiState.update { currentState ->
+            val newList = arrayListOf<ActualCurrencyRateUi>()
+
+            currentState.listActualCurrencyRates.forEach { currentItem ->
+                if (currentItem.id == new.id) {
+                    newList.add(new)
                 } else {
-                    newList.add(it)
+                    newList.add(currentItem)
                 }
             }
-        }
-        _uiState.value = _uiState.value?.copy(listActualCurrencyRates = newList)
-    }
-
-
-    private fun deletePairFromFavorite(currency: CurrencyUi) {
-        viewModelScope.launch(dispatcher.main() + exceptionHandler + CoroutineName(DELETE_PAIR_FROM_FAVORITE_KEY)) {
-            deletePairCurrenciesFromFavoriteByCharCodesUseCase.get().execute(
-                base = _uiState.value?.showedBaseCurrency,
-                second = currency.text,
-            )
-                .onStart { logger.d(TAG_LOG, "$NAME_FULL onStart") }
-                .map { result ->
-                    CurrencyUi(
-                        id = currency.id,
-                        text = currency.text,
-                        quotation = currency.quotation,
-                        isFavorite = !result,
-                    )
-                }
-                .cancellable()
-                .flowOn(dispatcher.io())
-                .onEach { model ->
-                    updateListActualCurrencyRates(model)
-                    logger.v(TAG_LOG, "$NAME_FULL success")
-                }
-                .catchCancellation { logger.v(TAG_LOG, "$NAME_FULL cancel") }
-                .catchException { logger.w(TAG_LOG, "$NAME_FULL ${it.message}", it) }
-                .onCompletion { finally -> logger.d(TAG_LOG, "$NAME_FULL ended") }
-                .collect()
+            currentState.toSuccess().copy(listActualCurrencyRates = newList)
         }
     }
 
+    override fun getLogger(): BaseLogger = logger
 
-    override fun onCleared() {
-        logger.v(TAG_LOG, "$NAME_FULL started")
-        super.onCleared()
+    override fun getTag(): String = TAG_LOG
+
+    override fun handle(cause: Throwable, details: String) {
+        super.handle(cause, details)
+        _uiState.update { CurrenciesUiState.Error(text = cause.message ?: "Unspecified error") }
+        //& next - errors send to analytic
     }
+
 }
