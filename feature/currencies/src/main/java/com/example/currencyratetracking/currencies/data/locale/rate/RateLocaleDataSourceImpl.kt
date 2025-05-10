@@ -2,8 +2,8 @@ package com.example.currencyratetracking.currencies.data.locale.rate
 
 import com.example.currencyratetracking.api_locale.api.rate.CurrencyPairRateApi
 import com.example.currencyratetracking.common_android.BaseLogger
+import com.example.currencyratetracking.common_android.Tag
 import com.example.currencyratetracking.core.data.AbstractDataSource
-import com.example.currencyratetracking.currencies.ModuleTag.TAG_LOG
 import com.example.currencyratetracking.currencies.data.locale.dataSource.RateLocaleDataSource
 import com.example.currencyratetracking.model.Currency
 import com.example.currencyratetracking.model.CurrencyPair
@@ -14,6 +14,7 @@ import javax.inject.Inject
 internal class RateLocaleDataSourceImpl @Inject constructor(
     private val logger: BaseLogger,
     private val currencyPairRateApi: CurrencyPairRateApi,
+    private val tag: Tag,
 ) : RateLocaleDataSource, AbstractDataSource() {
 
     override fun saveActualCurrencyRate(data: CurrencyPair): Flow<Boolean> {
@@ -21,7 +22,7 @@ internal class RateLocaleDataSourceImpl @Inject constructor(
             .map { it.toCurrencyPairRateDbo() }
             .map {
                 val result = currencyPairRateApi.insertPair(it)
-                if (result == 0L) logger.v(TAG_LOG, "$NAME_FULL dont saved data = $data")
+                if (result == 0L) logger.v(tag.LOG, "$NAME_FULL dont saved data = $data")
                 result > 0
             }
     }

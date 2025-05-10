@@ -25,7 +25,6 @@ import com.example.currencyratetracking.currencies.di.CurrenciesComponentProvide
 import com.example.currencyratetracking.di.app.activity.MainComponent
 import com.example.currencyratetracking.favorites.di.FavoritesComponent
 import com.example.currencyratetracking.favorites.di.FavoritesComponentProvider
-import com.example.currencyratetracking.presentation.ModuleTag.TAG_LOG
 import com.example.currencyratetracking.ui_theme.CurrencyRateTrackingTheme
 
 
@@ -36,7 +35,6 @@ class MainActivity : AbstractBackPressedActivity(), CurrenciesComponentProvider,
         mainComponent.getMainViewModel().create(stateHandle)
     }
 
-    override fun getTag(): String = TAG_LOG
 
     override fun onCreate(savedInstanceState: Bundle?) {
         mainComponent = (applicationContext as CrtApp).getAppComponent().getMainComponent().create()

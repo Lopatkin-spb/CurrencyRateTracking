@@ -1,6 +1,7 @@
 package com.example.currencyratetracking.currencies.di
 
 import com.example.currencyratetracking.common.FragmentScope
+import com.example.currencyratetracking.common_android.Tag
 import com.example.currencyratetracking.currencies.data.FavoriteRepositoryImpl
 import com.example.currencyratetracking.currencies.data.PersonalizationRepositoryImpl
 import com.example.currencyratetracking.currencies.data.RateRepositoryImpl
@@ -19,6 +20,7 @@ import com.example.currencyratetracking.currencies.domain.repository.RateReposit
 import com.example.currencyratetracking.currencies.domain.usecase.*
 import dagger.Binds
 import dagger.Module
+import dagger.Provides
 
 
 @Module(
@@ -27,8 +29,17 @@ import dagger.Module
         InternalDomainModule::class,
     ]
 )
-interface CurrenciesModule
-//todo: modules with subcomponent must internal
+internal interface CurrenciesModule{
+
+    companion object {
+
+        @FragmentScope
+        @Provides
+        fun provideTag(): Tag {
+            return Tag(appAcronym = "crt", moduleType = "feature", moduleName = "currencies")
+        }
+    }
+}
 
 @Module
 internal interface InternalDataModule {

@@ -2,11 +2,11 @@ package com.example.currencyratetracking.favorites.presentation
 
 import androidx.lifecycle.SavedStateHandle
 import com.example.currencyratetracking.common_android.BaseLogger
+import com.example.currencyratetracking.common_android.Tag
 import com.example.currencyratetracking.core.BaseCoroutineDispatcher
 import com.example.currencyratetracking.core.presentation.AbstractLoggingViewModel
 import com.example.currencyratetracking.core.presentation.ViewModelAssistedSavedStateFactory
 import com.example.currencyratetracking.core.transformToList
-import com.example.currencyratetracking.favorites.ModuleTag.TAG_LOG
 import com.example.currencyratetracking.favorites.domain.DeletePairCurrenciesFromFavoriteByCharCodesUseCase
 import com.example.currencyratetracking.favorites.domain.GetListFavoritePairsUseCase
 import com.example.currencyratetracking.favorites.domain.SetPairCurrenciesToFavoriteUseCase
@@ -26,8 +26,9 @@ class FavoritesViewModel @AssistedInject constructor(
     private val logger: BaseLogger,
     private val setPairCurrenciesToFavoriteUseCase: Lazy<SetPairCurrenciesToFavoriteUseCase>,
     private val deletePairCurrenciesFromFavoriteByCharCodesUseCase: Lazy<DeletePairCurrenciesFromFavoriteByCharCodesUseCase>,
+    private val tag: Tag,
     @Assisted private val savedStateHandle: SavedStateHandle,
-) : AbstractLoggingViewModel<FavoritesUiEvent>() {
+) : AbstractLoggingViewModel<FavoritesUiEvent>(logger, tag) {
 
     @AssistedFactory
     interface Factory : ViewModelAssistedSavedStateFactory<FavoritesViewModel>
@@ -49,7 +50,6 @@ class FavoritesViewModel @AssistedInject constructor(
         CoroutineExceptionHandler { coroutineContext, cause -> handle(cause, "$coroutineContext") }
 
     init {
-        logger.d(TAG_LOG, "$NAME_FULL started")
         loadFavoritesList()
     }
 
@@ -116,10 +116,6 @@ class FavoritesViewModel @AssistedInject constructor(
             FavoritesUiState.Success(listFavorites = newList)
         }
     }
-
-    override fun getLogger(): BaseLogger = logger
-
-    override fun getTag(): String = TAG_LOG
 
     override fun handle(cause: Throwable, details: String) {
         super.handle(cause, details)

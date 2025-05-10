@@ -1,6 +1,7 @@
 package com.example.currencyratetracking.favorites.di
 
 import com.example.currencyratetracking.common.FragmentScope
+import com.example.currencyratetracking.common_android.Tag
 import com.example.currencyratetracking.favorites.data.FavoriteRepositoryImpl
 import com.example.currencyratetracking.favorites.data.RateRepositoryImpl
 import com.example.currencyratetracking.favorites.data.locale.FavoriteLocaleDataSource
@@ -17,6 +18,7 @@ import com.example.currencyratetracking.favorites.domain.usecase.GetListFavorite
 import com.example.currencyratetracking.favorites.domain.usecase.SetPairCurrenciesToFavoriteUseCaseImpl
 import dagger.Binds
 import dagger.Module
+import dagger.Provides
 
 
 @Module(
@@ -25,8 +27,17 @@ import dagger.Module
         InternalDomainModule::class,
     ]
 )
-interface FavoritesModule
-//todo: set internal
+internal interface FavoritesModule {
+
+    companion object {
+
+        @FragmentScope
+        @Provides
+        fun provideTag(): Tag {
+            return Tag(appAcronym = "crt", moduleType = "feature", moduleName = "favorites")
+        }
+    }
+}
 
 @Module
 internal interface InternalDomainModule {

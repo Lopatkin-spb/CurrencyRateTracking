@@ -18,7 +18,7 @@ abstract class AbstractBackPressedActivity : AbstractLoggingActivity() {
         this.onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
 
             override fun handleOnBackPressed() {
-                logger.i(getTag(), "$NAME_FULL started")
+                logger.i(tag.LOG, "$NAME_FULL started")
 
                 if (isEnabled) {
                     prepareAppForColdClose()

@@ -2,7 +2,9 @@ package com.example.currencyratetracking.core.presentation
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import com.example.currencyratetracking.common_android.AppTag
 import com.example.currencyratetracking.common_android.BaseLogger
+import com.example.currencyratetracking.common_android.Tag
 import javax.inject.Inject
 
 
@@ -10,7 +12,11 @@ abstract class AbstractLoggingActivity : ComponentActivity() {
 
     @Inject
     lateinit var logger: BaseLogger
-    protected abstract fun getTag(): String
+
+    @Inject
+    @AppTag
+    lateinit var tag: Tag
+
 
     private var depth = 2
 
@@ -49,43 +55,43 @@ abstract class AbstractLoggingActivity : ComponentActivity() {
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        logger.d(getTag(), "$NAME_FULL started")
+        logger.d(tag.LOG, "$NAME_FULL started new")
 
         super.onCreate(savedInstanceState)
     }
 
     override fun onStart() {
-        logger.v(getTag(), "$NAME_FULL started")
+        logger.v(tag.LOG, "$NAME_FULL started new")
 
         super.onStart()
     }
 
     override fun onRestart() {
-        logger.v(getTag(), "$NAME_FULL started")
+        logger.v(tag.LOG, "$NAME_FULL started")
 
         super.onRestart()
     }
 
     override fun onResume() {
-        logger.i(getTag(), "$NAME_FULL started")
+        logger.i(tag.LOG, "$NAME_FULL started new")
 
         super.onResume()
     }
 
     override fun onPause() {
-        logger.i(getTag(), "$NAME_FULL started")
+        logger.i(tag.LOG, "$NAME_FULL started")
 
         super.onPause()
     }
 
     override fun onStop() {
-        logger.v(getTag(), "$NAME_FULL started")
+        logger.v(tag.LOG, "$NAME_FULL started")
 
         super.onStop()
     }
 
     override fun onDestroy() {
-        logger.d(getTag(), "$NAME_FULL started")
+        logger.d(tag.LOG, "$NAME_FULL started")
 
         super.onDestroy()
     }

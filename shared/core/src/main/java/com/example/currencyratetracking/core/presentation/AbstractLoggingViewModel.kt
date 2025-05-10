@@ -2,6 +2,7 @@ package com.example.currencyratetracking.core.presentation
 
 import androidx.lifecycle.viewModelScope
 import com.example.currencyratetracking.common_android.BaseLogger
+import com.example.currencyratetracking.common_android.Tag
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -10,7 +11,10 @@ import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 
 
-abstract class AbstractLoggingViewModel<in E : UiEvent> : AbstractBaseViewModel<E>() {
+abstract class AbstractLoggingViewModel<in E : UiEvent>(
+    private val logger: BaseLogger,
+    private val tag: Tag,
+) : AbstractBaseViewModel<E>() {
 
     private var depth = 2
 
@@ -48,18 +52,19 @@ abstract class AbstractLoggingViewModel<in E : UiEvent> : AbstractBaseViewModel<
             return name
         }
 
-    protected abstract fun getLogger(): BaseLogger
 
-    protected abstract fun getTag(): String
+    init {
+        logger.d(tag.LOG, "$NAME_FULL started")
+    }
 
     override fun handle(new: E) {
-        getLogger().i(getTag(), "$NAME_FULL ${new.javaClass.simpleName}")
+        logger.i(tag.LOG, "$NAME_FULL ${new.javaClass.simpleName}")
     }
 
     override fun handle(cause: Throwable, details: String) {
         when (cause) {
-            is Exception -> getLogger().w(getTag(), "$NAME_FULL parent ${cause.message} $details", cause)
-            else -> getLogger().e(getTag(), "$NAME_FULL parent ${cause.message} $details", cause)
+            is Exception -> logger.w(tag.LOG, "$NAME_FULL parent ${cause.message} $details", cause)
+            else -> logger.e(tag.LOG, "$NAME_FULL parent ${cause.message} $details", cause)
         }
     }
 
@@ -82,22 +87,22 @@ abstract class AbstractLoggingViewModel<in E : UiEvent> : AbstractBaseViewModel<
     ): Job {
         return scope.launch {
 
-            onStart { getLogger().d(getTag(), "$funLogName onStart") }
+            onStart { logger.d(tag.LOG, "$funLogName onStart") }
 
-                .onEach { getLogger().v(getTag(), "$funLogName success") }
+                .onEach { logger.v(tag.LOG, "$funLogName success") }
 
                 .onCompletion {
                     if (it is CancellationException) {
-                        getLogger().v(getTag(), "$funLogName cancel")
+                        logger.v(tag.LOG, "$funLogName cancel")
                     }
-                    getLogger().d(getTag(), "$funLogName ended")
+                    logger.d(tag.LOG, "$funLogName ended")
                 }
                 .collect() // tail-call
         }
     }
 
     override fun onCleared() {
-        getLogger().d(getTag(), "$NAME_FULL started")
+        logger.d(tag.LOG, "$NAME_FULL started")
         super.onCleared()
     }
 
